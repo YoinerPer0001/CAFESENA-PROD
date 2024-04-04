@@ -15,6 +15,10 @@ const Categorias = connection.define('Categorias', {
     Nom_Cat: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    activo:{
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
     }
   });
 

@@ -13,10 +13,14 @@ export const GetCategories = async (req, res) => {
 
     try {
 
-        const categorias = await Categorias.findAll();
+        const datos_activos = await Categorias.findAll({
+            where: {
+                activo: true
+            }
+            })
 
-        if (categorias) {
-            response(res, 200, 200, categorias);
+        if (datos_activos) {
+            response(res, 200, 200, datos_activos);
         } else {
             response(res, 404);
         }
@@ -176,4 +180,47 @@ export const UpdateCategories = async (req, res) => {
 
 
     })
+}
+
+export const deleteCat = async (req, res) => {
+    const {id} = req.params;
+    try {
+        jwt.verify(req.token,process.env.SECRETWORD, async (err,data)=>{
+            if(err){
+                response(res, 401, 401, "Invalid");
+            }else{
+                const permisos = adminPermissions(data.user.Id_Rol_FK);
+                if(permisos){
+                    const data  = await  Categorias.findOne({
+                    where: {
+                        Id_Cat:id
+                    },
+                    })
+                    if(!data){
+                      response(res, 200,200, 'eliminado correctamente')
+                    }
+                    const deletedCat =  Categorias.update(
+                       { activo:false},
+                      {
+                        where: {
+                            Id_Cat:id,
+                            activo:true
+                        } 
+                      }  
+                    )
+                    if(deletedCat){
+                        response(res, 200,200, "eliminado correctamente")
+                    }
+                    else{
+                        response(res, 500,500, "error al eliminar")
+                    }
+    
+                }
+            }
+        });
+        
+    } catch (error) {
+        console.log(error)
+        
+    }
 }

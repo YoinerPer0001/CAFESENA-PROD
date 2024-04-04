@@ -1,6 +1,6 @@
 
 ### Obtener usuarios
-GET http://localhost:3000/users/all
+DELETE  http://localhost:3000/api/v1/categories/delete/2
 Content-Type: application/json
 
 
