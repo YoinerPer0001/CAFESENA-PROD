@@ -2,7 +2,7 @@ import jsonwebtoken from "jsonwebtoken";
 import 'dotenv/config';
 import { adminPermissions, EmplPermissions } from "../utils/manage.permissions.js";
 import { response } from "../utils/responses.js";
-import Inventarios  from "../models/inventarios.model.js";
+import Inventarios from "../models/inventarios.model.js";
 import uniqid from 'uniqid';
 
 const jwt = jsonwebtoken;
@@ -12,8 +12,13 @@ export const GetInventarios = async (req, res) => {
 
     try {
 
-        const data = await Inventarios.findAll()
-        if(data){
+        const datos_activos = await Inventarios.findAll({
+            where: {
+                activo: true
+            }
+            })
+
+        if(datos_activos){
             response(res, 200, 200, data);
         }
         else{
@@ -155,4 +160,47 @@ export const UpdateInventarios = async (req, res) => {
 
 
     })
+}
+
+export const deleteInv = async (req, res) => {
+    const {id} = req.params;
+    try {
+        jwt.verify(req.token,process.env.SECRETWORD, async (err,data)=>{
+            if(err){
+                response(res, 401, 401, "Invalid");
+            }else{
+                const permisos = adminPermissions(data.user.Id_Rol_FK);
+                if(permisos){
+                    const data  = await  Inventarios.findOne({
+                    where: {
+                        INV_ID:id
+                    },
+                    })
+                    if(!data){
+                      response(res, 200,200, 'eliminado correctamente')
+                    }
+                    const borrarInventario =  Inventarios.update(
+                       { activo:false},
+                      {
+                        where: {
+                            INV_ID:id,
+                            activo:true
+                        } 
+                      }  
+                    )
+                    if(borrarInventario){
+                        response(res, 200,200, "eliminado correctamente")
+                    }
+                    else{
+                        response(res, 500,500, "error al eliminar")
+                    }
+    
+                }
+        }
+    });
+        
+    } catch (error) {
+        console.log(error)
+        
+    }
 }

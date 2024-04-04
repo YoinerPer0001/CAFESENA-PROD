@@ -8,6 +8,7 @@ import {
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import validateCategoriaCreate from "../../validators/Validator create/categoria.validators.js";
 import validateCategoriaUpdate from "../../validators/Validator update/categoria.validators.js";
+import {deleteCat} from "../../controllers/categorias.controller.js"
 const routesCategorias = express();
 
 /**
@@ -343,11 +344,9 @@ routesCategorias.post("/api/v1/categories/create", validateCategoriaCreate, veri
 routesCategorias.put("/api/v1/categories/update/:id",validateCategoriaUpdate,verifyToken,UpdateCategories
 );
 
-/*
 routesCategorias.delete(
-  "/api/categories/delete/:id",
+  "/api/v1/categories/deleted/:id",
   verifyToken,
-  DeleteCategories
-);*/
-
+  deleteCat
+);
 export default routesCategorias;
