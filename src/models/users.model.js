@@ -2,6 +2,7 @@ import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
 import  Token  from "./tokens.model.js";
 import Localizacion from "./localizacion.model.js";
+import { Encabezados } from "./encabezado.model.js";
 
 
 const Usuario = connection.define('Usuario', {
@@ -58,5 +59,8 @@ const Usuario = connection.define('Usuario', {
 
   Usuario.hasMany(Localizacion,{foreignKey:'Id_User_FK'})
   Localizacion.belongsTo(Usuario,{foreignKey :'Id_User_FK', targetKey: 'Id_User'});
+
+  Usuario.hasMany(Encabezados, {foreignKey:'ID_USER_FK'})
+  Encabezados.belongsTo(Usuario,{foreignKey:'ID_USER_FK',targetKey:'Id_User'})
 
   export default Usuario;
