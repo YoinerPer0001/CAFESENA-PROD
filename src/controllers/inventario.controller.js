@@ -2,7 +2,7 @@ import jsonwebtoken from "jsonwebtoken";
 import 'dotenv/config';
 import { adminPermissions, EmplPermissions } from "../utils/manage.permissions.js";
 import { response } from "../utils/responses.js";
-import Inventarios  from "../models/inventario.model.js";
+import Inventarios from "../models/inventarios.model.js";
 import uniqid from 'uniqid';
 
 const jwt = jsonwebtoken;
@@ -196,8 +196,8 @@ export const deleteInv = async (req, res) => {
                     }
     
                 }
-            }
-        });
+        }
+    });
         
     } catch (error) {
         console.log(error)

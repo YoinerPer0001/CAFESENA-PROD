@@ -216,8 +216,8 @@ export const deleteCat = async (req, res) => {
                     }
     
                 }
-            }
-        });
+        }
+    });
         
     } catch (error) {
         console.log(error)

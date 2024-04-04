@@ -5,7 +5,7 @@ const detalleCompra = connection.define( 'detalleCompra',{
     Id_Detalle:{
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: false,
+        primaryKey: true,
     },
     Id_Enc_FK:{
         type: DataTypes.STRING,
@@ -22,5 +22,12 @@ const detalleCompra = connection.define( 'detalleCompra',{
     Precio_U:{
         type: DataTypes.DECIMAL,
         allowNull: false,
+    },
+    Prov_Id_FK:{
+        type: DataTypes.STRING,
+        allowNull: false,
     }
 })
+
+
+export default detalleCompraiment;
