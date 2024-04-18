@@ -1,4 +1,4 @@
-import {GetInventarios, UpdateInventarios, createInventario} from '../../controllers/inventario.controller.js'
+import {GetInventarios, UpdateInventarios, createInventario, deleteInv} from '../../controllers/inventario.controller.js'
 import express from "express";
 import { verifyToken } from '../../middlewares/verifyToken.js'
 import validateInventarioCreate from '../../validators/Validator create/inventario.validators.js';

@@ -1,6 +1,5 @@
 import jsonwebtoken from "jsonwebtoken"
 import { adminPermissions } from "../utils/manage.permissions.js";
-
 import 'dotenv/config'
 import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
@@ -64,3 +63,62 @@ export const createEncabezado = async (req,res)=>{
 
 //actualizar informacion del encabezado
 
+export const UpdateEncabezado = async (req, res) => {
+
+    jwt.verify(req.token, process.env.SECRETWORD, async (err, dat) => {
+        if (err) {
+            response(res, 400, 105, "Something went wrong");
+        } else {
+
+            try {
+                const { Id_Rol_FK } = dat.user;
+
+                let adPermision = adminPermissions(Id_Rol_FK);
+
+
+                if (adPermision) {
+
+                    //Data
+                    const { id } = req.params;
+                    const { PROD_ID_FK, PROD_CANT,INV_EST, } = req.body;
+                    //verify exist category
+
+                    const Encabezado = await Encabezados.findByPk(id)
+
+                    if (!Encabezados) {
+
+                        response(res, 404, 404, "Inventario don't exist");
+
+                    } else {
+
+                        const data = {
+                            PROD_ID_FK:PROD_ID_FK,
+                            PROD_CANT:PROD_CANT,
+                            INV_EST:INV_EST,
+                        }
+
+                        const responses = await Encabezado.update(data,{where:{INV_ID: id}})
+                        
+                        if(responses){
+                            response(res, 200)
+                        }else{
+                            response(res, 500, 500, "Error updating")
+                        }
+
+                    }
+
+                } else {
+                    response(res, 401, 401, "You don't have permissions");
+                }
+
+            } catch (err) {
+
+                    response(res, 500, 500, "something went wrong");
+                    console.log(err)
+                
+            }
+        }
+
+
+    })
+}

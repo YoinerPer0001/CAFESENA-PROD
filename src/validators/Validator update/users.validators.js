@@ -6,6 +6,7 @@ const validateUserUpdate =[
     
     check('Nom_User').optional().not().isEmpty().isString(),
     check('Ape_User').optional().not().isEmpty().isString(),
+    
     check('Ema_User').optional().not().isEmpty().isEmail(),
     check('Pass_User').optional().not().isEmpty().isString().isLength({ min: 8 }),
     check('Dir_Ip').optional().not().isEmpty().isString(),

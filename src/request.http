@@ -5,13 +5,14 @@ Content-Type: application/json
 
 
 ### Crear un usuario
-POST http://localhost:3000/api/v1/proveedor/create
+POST http://localhost:3000/api/v1/login
 Content-Type: application/json
 
 {
-    "id_ProvPK": "4",
-    "nomb_Prov": "keaner",
-    "fech_Reg": "2020/03/11"
+    "Ema_User": "yoinerpertuz@gmail.com",
+    "Pass_User": "1234567890",
+    "Dir_Ip": "192.168.0.1"
+    
 }
 
 

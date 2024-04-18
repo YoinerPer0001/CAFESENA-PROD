@@ -3,6 +3,7 @@ import {getUsers, loginUser, regUser,ValidateEmail, ValidateCod, UpdateUserData,
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import validateUserCreate from "../../validators/Validator create/users.validators.js";
 import validateUserUpdate from "../../validators/Validator update/users.validators.js";
+import validateLogin from "../../validators/Validator Login/login.validators.js";
 
 const userRoutes = express();
 
@@ -279,7 +280,7 @@ userRoutes.get('/api/v1/users/:id', verifyToken, getUserxId);
  *                 code: 400
  *                 message: algo salio mal
  */
-userRoutes.post('/api/v1/login', loginUser);
+userRoutes.post('/api/v1/login',validateLogin, loginUser);
 
 //User Register ---ok--
 

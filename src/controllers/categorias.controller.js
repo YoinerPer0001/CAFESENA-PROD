@@ -12,13 +12,11 @@ const jwt = jsonwebtoken;
 export const GetCategories = async (req, res) => {
 
     try {
-
         const datos_activos = await Categorias.findAll({
             where: {
                 activo: true
             }
             })
-
         if (datos_activos) {
             response(res, 200, 200, datos_activos);
         } else {
