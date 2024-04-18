@@ -8,6 +8,23 @@ import Usuario from "../models/users.model.js";
 
 
 const jwt = jsonwebtoken;
+//obtiene encabezados por tipo 1:compra, 2:ventas
+export const GetAll = async (req, res, next) =>{
+    jwt.verify(req.token, process.env.SECRETWORD,async (err,data)=>{
+        if(err){
+            response(res, 401, 401, "Token Error");
+        }else{
+
+            const encabezados = await Encabezados.findAll()
+            if(encabezados){
+                response(res, 200, 200 ,encabezados)
+            }else{
+                response(res, 404, 404, "not found");
+            } 
+
+        }
+    })
+}
 
 //obtiene encabezados por tipo 1:compra, 2:ventas
 export const GetxType = async (req, res, next) =>{
@@ -80,21 +97,23 @@ export const UpdateEncabezado = async (req, res) => {
 
                     //Data
                     const { id } = req.params;
-                    const { PROD_ID_FK, PROD_CANT,INV_EST, } = req.body;
+                    const { PROD_ID_FK, FECH_ENC, MET_PAGO, TOTAL, TIPO_ENCABE } = req.body;
                     //verify exist category
 
                     const Encabezado = await Encabezados.findByPk(id)
 
                     if (!Encabezados) {
 
-                        response(res, 404, 404, "Inventario don't exist");
+                        response(res, 404, 404, "encabezado don't exist");
 
                     } else {
 
                         const data = {
                             PROD_ID_FK:PROD_ID_FK,
-                            PROD_CANT:PROD_CANT,
-                            INV_EST:INV_EST,
+                            FECH_ENC:FECH_ENC,
+                            MET_PAGO:MET_PAGO,
+                            TOTAL:TOTAL,
+                            TIPO_ENCABE:TIPO_ENCABE,
                         }
 
                         const responses = await Encabezado.update(data,{where:{INV_ID: id}})

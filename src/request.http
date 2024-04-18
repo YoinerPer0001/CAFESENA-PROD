@@ -5,19 +5,13 @@ Content-Type: application/json
 
 
 ### Crear un usuario
-POST http://localhost:3000/api/v1/login
+GET http://localhost:3000/api/v1/encabezados/all
 Content-Type: application/json
 
-{
-    "Ema_User": "yoinerpertuz@gmail.com",
-    "Pass_User": "1234567890",
-    "Dir_Ip": "192.168.0.1"
-    
-}
 
 
-### Crear un usuario
-PUT http://localhost:3000/users/update/12
+### actualizar un usuario
+PUT http://localhost:3000//api/v1/encabezado/update/
 
     {
       "username": "jairo manue",
