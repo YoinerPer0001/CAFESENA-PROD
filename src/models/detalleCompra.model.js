@@ -30,4 +30,4 @@ const detalleCompra = connection.define( 'detalleCompra',{
 })
 
 
-export default detalleCompraiment;
+export default detalleCompra;
