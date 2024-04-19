@@ -122,7 +122,7 @@ export const UpdateLocations = async (req, res) => {
 
         if (!location) {
 
-            response(res, 500, 103, "Something went wrong");
+            response(res, 404, 404, "location don't found");
 
         } else {
             
@@ -134,8 +134,7 @@ export const UpdateLocations = async (req, res) => {
 
                 if (!userExist) {
 
-                    response(res, 500, 103, "User don't exist");
-
+                    response(res, 404, 404, "User don't found");
 
                 } else {
 

@@ -255,7 +255,7 @@ export const ValidateEmail = async (req, res) => {
 //login user
 export const loginUser = async (req, res) => {
 
-    try {
+
 
         const { Ema_User, Pass_User, Dir_Ip } = req.body;
 
@@ -295,7 +295,7 @@ export const loginUser = async (req, res) => {
                     }
 
                     //generamos token y save on db
-                    const datosToken = TokenDb(userData);
+                    const datosToken = await TokenDb(userData);
 
                     if (datosToken) {
 
@@ -375,16 +375,6 @@ export const loginUser = async (req, res) => {
         } else {
             response(res, 400, 103, "User or password incorrect");
         }
-
-
-
-    } catch (err) {
-
-        response(res, 500, 500, err);
-
-
-    }
-
 
 }
 

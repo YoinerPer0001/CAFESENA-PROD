@@ -8,14 +8,14 @@ import Usuario from "../models/users.model.js";
 
 
 const jwt = jsonwebtoken;
-//obtiene encabezados por tipo 1:compra, 2:ventas
+//obtiene encabezados 
 export const GetAll = async (req, res) =>{
     jwt.verify(req.token, process.env.SECRETWORD,async (err,data)=>{
         if(err){
             response(res, 401, 401, "Token Error");
         }else{
 
-            const encabezados = await Encabezados.findAll()
+            const encabezados = await Encabezados.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } })
             if(encabezados){
                 response(res, 200, 200 ,encabezados)
             }else{

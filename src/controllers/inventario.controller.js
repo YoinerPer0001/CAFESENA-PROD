@@ -4,6 +4,7 @@ import { adminPermissions, EmplPermissions } from "../utils/manage.permissions.j
 import { response } from "../utils/responses.js";
 import Inventarios from "../models/inventarios.model.js";
 import uniqid from 'uniqid';
+import Producto from "../models/productos.models.js";
 
 const jwt = jsonwebtoken;
 
@@ -12,195 +13,177 @@ export const GetInventarios = async (req, res) => {
 
     try {
 
-        const datos_activos = await Inventarios.findAll({
-            where: {
-                activo: true
-            }
-            })
+        const inventory = await Inventarios.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } })
 
-        if(datos_activos){
-            response(res, 200, 200, data);
+        if (inventory) {
+            response(res, 200, 200, inventory);
         }
-        else{
-            response(res, 404, 404, "No se encontraron inventarios");
+        else {
+            response(res, 404, 404, "Inventories not found");
         }
 
 
     } catch (error) {
         response(res, 500, 500, error);
+    }
 
-      
-        
-        
+}
+
+export const GetInventarioxId = async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const inventory = await Inventarios.findByPk(id, { attributes: { exclude: ['createdAt', 'updatedAt'] } })
+
+        if (inventory) {
+            response(res, 200, 200, inventory);
+        }
+        else {
+            response(res, 404, 404, "Inventory not found");
+        }
+
+
+    } catch (error) {
+        response(res, 500, 500, error);
     }
 
 }
 
 export const createInventario = async (req, res) => {
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, data) => {
+    try {
 
-        if (err) {
-            response(res, 500, 105, "Something went wrong");
-            console.log(err);
+        const INV_ID = uniqid();
+
+        const { PROD_ID_FK, PROD_CANT, INV_EST, } = req.body;
+
+        const producto = await Producto.findByPk(PROD_ID_FK);
+
+        if (!producto) {
+            response(res, 404, 404, "Product not found");
+
         } else {
 
-            try {
-
-                const INV_ID = uniqid();
-
-                const { PROD_ID_FK, PROD_CANT,INV_EST, } = req.body;
-
-                if (!PROD_ID_FK) {
-                    response(res, 400, 102, "Something went wrong");
-
-                } else {
-
-                    //verify user permissions
-                    const adminPermiso = adminPermissions(data.user.Id_Rol_FK);
-
-                    if (!adminPermiso) {
-
-                        response(res, 403, 403, "you dont have permissions");
-                    } else {
-
-                        //verificamos que no exista una categoria con el mismo nombre
-                        const dataInventario = await Inventarios.findOne({ where: { INV_ID: INV_ID } })
-
-
-                        if (dataInventario) {
-
-                            response(res, 500, 107, "Inventario already exist");
-
-                        } else {
-
-                            //create category
-                            const data = {
-                                INV_ID:INV_ID ,
-                                PROD_ID_FK:PROD_ID_FK,
-                                PROD_CANT:PROD_CANT,
-                                INV_EST:INV_EST,
-                            }
-
-                            const newInventario = await Inventarios.create(data);
-                            if (newInventario) {
-                                response(res, 200)
-                            } else {
-                                response(res, 500, 500, "Error creating")
-                            }
-
-                        }
-                    }
-                }
-            } catch (err) {
-
-                response(res, 500, 500, "something went wrong");
-                console.log(err)
+            //create inventory
+            const data = {
+                INV_ID: INV_ID,
+                PROD_ID_FK: PROD_ID_FK,
+                PROD_CANT: PROD_CANT,
+                INV_EST: INV_EST,
             }
 
+            const newInventario = await Inventarios.create(data);
+            if (newInventario) {
+                response(res, 200)
+            } else {
+                response(res, 500, 500, "Error creating")
+            }
 
         }
-    })
+    } catch (err) {
+
+        response(res, 500, 500, err);
+
+    }
 }
 
 export const UpdateInventarios = async (req, res) => {
-
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, dat) => {
-        if (err) {
-            response(res, 400, 105, "Something went wrong");
-        } else {
-
-            try {
-                const { Id_Rol_FK } = dat.user;
-
-                let adPermision = adminPermissions(Id_Rol_FK);
-
-
-                if (adPermision) {
-
-                    //Data
-                    const { id } = req.params;
-                    const { PROD_ID_FK, PROD_CANT,INV_EST, } = req.body;
-                    //verify exist category
-
-                    const inventario = await Inventarios.findByPk(id)
-
-                    if (!inventario) {
-
-                        response(res, 404, 404, "Inventario don't exist");
-
-                    } else {
-
-                        const data = {
-                            PROD_ID_FK:PROD_ID_FK,
-                            PROD_CANT:PROD_CANT,
-                            INV_EST:INV_EST,
-                        }
-
-                        const responses = await inventario.update(data,{where:{INV_ID: id}})
-                        
-                        if(responses){
-                            response(res, 200)
-                        }else{
-                            response(res, 500, 500, "Error updating")
-                        }
-
-                    }
-
-                } else {
-                    response(res, 401, 401, "You don't have permissions");
-                }
-
-            } catch (err) {
-
-                    response(res, 500, 500, "something went wrong");
-                    console.log(err)
-                
-            }
-        }
-
-
-    })
-}
-
-export const deleteInv = async (req, res) => {
-    const {id} = req.params;
     try {
-        jwt.verify(req.token,process.env.SECRETWORD, async (err,data)=>{
-            if(err){
-                response(res, 401, 401, "Invalid");
-            }else{
-                const permisos = adminPermissions(data.user.Id_Rol_FK);
-                if(permisos){
-                    const data  = await  Inventarios.findOne({
-                    where: {
-                        INV_ID:id
-                    },
-                    })
-                    if(!data){
-                      response(res, 200,200, 'eliminado correctamente')
+
+        //Data
+        const { id } = req.params;
+        const datos = req.body;
+        //verify exist category
+
+        let inventory = await Inventarios.findByPk(id)
+
+        if (!inventory) {
+
+            response(res, 404, 404, "Inventario don't exist");
+
+        } else {
+            inventory = inventory.dataValues;
+            let dataenv;
+
+            if(datos.PROD_ID_FK){
+                const producto = await Producto.findByPk(datos.PROD_ID_FK);
+
+                if (!producto) {
+                    response(res, 404, 404, "Product not found");
+                }else{
+
+                    dataenv = {
+                        PROD_ID_FK: datos.PROD_ID_FK,
+                        PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
+                        INV_EST: datos.INV_EST || inventory.INV_EST
                     }
-                    const borrarInventario =  Inventarios.update(
-                       { activo:false},
-                      {
-                        where: {
-                            INV_ID:id,
-                            activo:true
-                        } 
-                      }  
-                    )
-                    if(borrarInventario){
-                        response(res, 200,200, "eliminado correctamente")
-                    }
-                    else{
-                        response(res, 500,500, "error al eliminar")
-                    }
-    
                 }
+            }else{
+                dataenv = {
+                    PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
+                    INV_EST: datos.INV_EST || inventory.INV_EST
+                }
+            }
+
+            const responses = await Inventarios.update(dataenv, { where: { INV_ID: id } })
+
+            if (responses) {
+                response(res, 200)
+            } else {
+                response(res, 500, 500, "Error updating")
+            }
+
         }
-    });
-        
-    } catch (error) {
-        console.log(error)
-        
+
+    } catch (err) {
+
+        response(res, 500, 500, "something went wrong");
+
+
     }
 }
+
+
+// export const deleteInv = async (req, res) => {
+//     const { id } = req.params;
+//     try {
+//         jwt.verify(req.token, process.env.SECRETWORD, async (err, data) => {
+//             if (err) {
+//                 response(res, 401, 401, "Invalid");
+//             } else {
+//                 const permisos = adminPermissions(data.user.Id_Rol_FK);
+//                 if (permisos) {
+//                     const data = await Inventarios.findOne({
+//                         where: {
+//                             INV_ID: id
+//                         },
+//                     })
+//                     if (!data) {
+//                         response(res, 200, 200, 'eliminado correctamente')
+//                     }
+//                     const borrarInventario = Inventarios.update(
+//                         { activo: false },
+//                         {
+//                             where: {
+//                                 INV_ID: id,
+//                                 activo: true
+//                             }
+//                         }
+//                     )
+//                     if (borrarInventario) {
+//                         response(res, 200, 200, "eliminado correctamente")
+//                     }
+//                     else {
+//                         response(res, 500, 500, "error al eliminar")
+//                     }
+
+//                 }
+//             }
+//         });
+
+//     } catch (error) {
+//         console.log(error)
+
+//     }
+// }
