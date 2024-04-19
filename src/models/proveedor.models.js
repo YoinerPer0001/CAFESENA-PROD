@@ -18,12 +18,13 @@ const Proveedor = connection.define('Proveedor', {
     },
   
       PROV_CONTACTO: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       PROV_EST: {
         type: DataTypes.CHAR,
         allowNull: false,
+        defaultValue: "A"
       }
       
   });

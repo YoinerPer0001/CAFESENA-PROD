@@ -22,7 +22,7 @@ const Usuario = connection.define('Usuario', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    tel_user:{
+    Tel_User:{
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue:null,

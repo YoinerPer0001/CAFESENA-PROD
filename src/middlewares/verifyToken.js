@@ -17,7 +17,7 @@ export const verifyToken = async (req, res, next) => {
 
             if (fechaActual > decodetoken.payload.exp) {
 
-                response(res,400,105,"Expired token");
+                response(res,401,401,"Expired token");
             }else{
 
                 req.token = bearerToken;
@@ -37,20 +37,29 @@ export const verifyToken = async (req, res, next) => {
             const fechaActual = Math.floor(Date.now() / 1000);
 
             if (fechaActual > decodetoken.payload.exp) {
-                response(res,400,105,"Expired token");
+                response(res,401,401,"Expired token");
             }else{
                 req.token = bearerToken;
-                next();
+
+                jwt.verify(bearerToken, process.env.SECRETWORD,(err,data)=>{
+                    if(err){
+                        response(res,401,401,"Token Error");
+                    }else{
+                        req.Tokendata = data;
+                        next();
+                    }
+                });
+            
             }
 
            
 
         } else {
             
-            response(res,400,101,"invalid token");
+            response(res,401,401,"invalid token");
         }
     } catch (error) {
 
-        response(res,400,101,"invalid token");
+        response(res,401,401,"invalid token");
     }
 }

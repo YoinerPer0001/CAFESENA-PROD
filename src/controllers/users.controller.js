@@ -15,80 +15,44 @@ import Localizacion from "../models/localizacion.model.js";
 
 const jwt = jsonwebtoken;
 
-// get all users
+// get all users--- ok
 export const getUsers = async (req, res) => {
 
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, data) => {
+    try {
 
-        try {
-
-            const adminPermiso = adminPermissions(data.user.Id_Rol_FK);
-
-            if (adminPermiso) {
-                const users = await Usuario.findAll({
-
-                    attributes: { exclude: ['Pass_User'] }
-
-                });
-                response(res, 200, 200, users);
-
-            } else {
-                response(res, 401, 401, "Unauthorized");
-            }
-
-        } catch (err) {
-
-            response(res, 500, 500, err);
-
+        const users = await Usuario.findAll({ attributes: { exclude: ['Pass_User', 'createdAt', 'updatedAt'] } });
+        if (users) {
+            response(res, 200, 200, users);
+        } else {
+            response(res, 404, 404, "Users not found");
         }
 
-    })
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+
+
 
 }
 
-// get all users
+// get users x id --- ok
 export const getUserxId = async (req, res) => {
 
+    try {
 
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, data) => {
+        const { id } = req.params;
 
-        try {
-
-
-            if (err) {
-                response(res, 500, 105, "Something went wrong");
-
-            } else {
-                const { id } = req.params;
-
-                //mostramos datos de usuarios
-                const users = await Usuario.findByPk(id);
-                if (users) {
-                    response(res, 200, 200, users);
-                } else {
-                    response(res, 404, 404, "Users not found");
-                }
-
-
-            }
-
-        } catch (err) {
-            if (err.errno) {
-
-                response(res, 400, err.errno, err.code);
-
-            } else {
-                response(res, 500, 500, "something went wrong");
-
-            }
+        //mostramos datos de usuarios
+        const users = await Usuario.findByPk(id, { attributes: { exclude: ['Pass_User', 'createdAt', 'updatedAt'] } });
+        if (users) {
+            response(res, 200, 200, users);
+        } else {
+            response(res, 404, 404, "Users not found");
         }
 
-
-    })
-
-
-
-
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
 
 
 }
@@ -116,7 +80,7 @@ export const regUser = async (req, res) => {
                 Ape_User: datos.Ape_User,
                 Ema_User: datos.Ema_User,
                 Pass_User: passEncripted,
-                Id_Rol_FK: 1,
+                Id_Rol_FK: 3,
             }
 
             //insert data in database
@@ -125,7 +89,7 @@ export const regUser = async (req, res) => {
             if (userInserted) {
 
                 // //generamos un codigo que se guardara en la base de datos
-                const { codigo, exp } = GenCodigosTemp(600);
+                const { codigo, exp } = await GenCodigosTemp(600);
 
                 const DataToken = {
                     Token: codigo,
@@ -175,31 +139,33 @@ export const regUser = async (req, res) => {
     }
 }
 
-//UPDATE USERS data (only rol users)
+//UPDATE USERS data 
 export const UpdateUserData = async (req, res) => {
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, jwtdata) => {
 
-        try {
+    try {
 
-            const { Id_User } = jwtdata.user;
+        const { id } = req.params;
 
-            const UserData = req.body;
+        const UserData = req.body;
 
-            //get actual data
-            const actualData = await Usuario.findByPk(Id_User);
+        //get actual data
+        let actualData = await Usuario.findByPk(id);
+
+        if (actualData) {
+            actualData = actualData.dataValues;
 
             const objUpdate = {
-                Id_User: Id_User,
-                Nom_User: UserData.Nom_User || actualData[0].Nom_User,
-                Ape_User: UserData.Ape_User || actualData[0].Ape_User,
-                Tel_User: UserData.Tel_User || actualData[0].Tel_User,
-                Ema_User: UserData.Ema_User || actualData[0].Ema_User,
-                Fot_User: UserData.Fot_User || actualData[0].Tel_User
+                
+                Nom_User: UserData.Nom_User || actualData.Nom_User,
+                Ape_User: UserData.Ape_User || actualData.Ape_User,
+                Tel_User: UserData.Tel_User || actualData.Tel_User,
+                Ema_User: UserData.Ema_User || actualData.Ema_User,
+                Fot_User: UserData.Fot_User || actualData.Tel_User
             }
 
             //update data
 
-            const updatedData = await Usuario.update(objUpdate);
+            const updatedData = await Usuario.update(objUpdate, {where: {Id_User: id}});
 
             if (updatedData) {
                 response(res, 200, 200);
@@ -207,19 +173,14 @@ export const UpdateUserData = async (req, res) => {
                 response(res, 500, 500, "Error updating");
             }
 
-        } catch (err) {
-            if (err.errno) {
-
-                response(res, 400, err.errno, err.code);
-
-            } else {
-                response(res, 500, 500, err);
-
-            }
+        }else{
+            response(res, 404, 404, "User not found");
         }
 
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
 
-    })
 }
 
 //Validate Email 
@@ -251,10 +212,10 @@ export const ValidateEmail = async (req, res) => {
 
                     // verificamos que no este expirado el codigo
                     if (fechaActual > fechaExp) {
-                        response(res, 400, 106, "Expired token");
+                        response(res, 401, 401, "Expired token");
                     } else {
                         // actualizamos el estado del Email a verificado
-                        const updatedUser = await Usuario.update({ 'Est_Email_User': 1 }, {where: {Id_User:datos.Id_User}});
+                        const updatedUser = await Usuario.update({ 'Est_Email_User': 1 }, { where: { Id_User: datos.Id_User } });
 
                         if (updatedUser) {
                             response(res, 200, 200);
@@ -264,12 +225,12 @@ export const ValidateEmail = async (req, res) => {
                     }
 
                 } else {
-                    response(res, 400, 105, "invalid token");
+                    response(res, 401, 401, "Incorrect code");
                 }
 
             } else {
 
-                response(res, 400, 103, "Something went wrong");
+                response(res, 404, 404, "User not found");
             }
 
 
@@ -383,7 +344,7 @@ export const loginUser = async (req, res) => {
 
 
                     //enviamos codigo de verificacion para guardar la nueva ip
-                    const { codigo, exp } = GenCodigosTemp(600);
+                    const { codigo, exp } = await GenCodigosTemp(600);
                     //guardamos en la base de datos
                     const objTok = {
                         Token: codigo,
@@ -401,7 +362,7 @@ export const loginUser = async (req, res) => {
                     if (token) {
                         mensaje_Confirm_Login(user.Ema_User, user.Nom_User, codigo);
 
-                        response(res, 200, 108, "Verification code send success (update new ip)");
+                        response(res, 401, 401, "Verification code send success (update new ip)");
                     }
 
                 }
@@ -436,7 +397,7 @@ export const ValidateCod = async (req, res) => {
 
         // verificamos que exista el usuario
         const user = await Usuario.findByPk(Id_User)
-       
+
         if (user) {
             //verificamos que el token coincida
             const datos = {
@@ -448,8 +409,8 @@ export const ValidateCod = async (req, res) => {
 
             if (token) {
                 token = token.dataValues;
-                
-                
+
+
                 const fechaActual = Math.floor(Date.now() / 1000);
                 const fechaExp = token.Fec_Caducidad;
 
@@ -504,7 +465,7 @@ export const ValidateCod = async (req, res) => {
 //funtions
 
 // create token
-function TokenDb(userData) {
+export const TokenDb = async (userData)=> {
 
 
     const token = jwt.sign({ user: userData }, process.env.SECRETWORD, { expiresIn: '24h' });

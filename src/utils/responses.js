@@ -1,5 +1,5 @@
 export const response = (res, status, codigo, message) => {
-    if (status > 499) {
+    if (status >= 400) {
         return res.status(status).json({
 
             type: "error",

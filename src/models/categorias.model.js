@@ -19,6 +19,7 @@ const Categorias = connection.define('Categorias', {
     activo:{
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: true
     }
   });
 

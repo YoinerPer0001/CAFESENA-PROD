@@ -9,7 +9,7 @@ import Usuario from "../models/users.model.js";
 
 const jwt = jsonwebtoken;
 //obtiene encabezados por tipo 1:compra, 2:ventas
-export const GetAll = async (req, res, next) =>{
+export const GetAll = async (req, res) =>{
     jwt.verify(req.token, process.env.SECRETWORD,async (err,data)=>{
         if(err){
             response(res, 401, 401, "Token Error");
@@ -27,7 +27,7 @@ export const GetAll = async (req, res, next) =>{
 }
 
 //obtiene encabezados por tipo 1:compra, 2:ventas
-export const GetxType = async (req, res, next) =>{
+export const GetxType = async (req, res) =>{
 
     jwt.verify(req.token, process.env.SECRETWORD,async (err,data)=>{
         if(err){

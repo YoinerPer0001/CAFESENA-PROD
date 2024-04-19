@@ -1,6 +1,6 @@
 import speakeasy from 'speakeasy'
 
-export const GenCodigosTemp = (tiempo)=> {
+export const GenCodigosTemp = async (tiempo)=> {
 
     const secret = speakeasy.generateSecret({ length: 6 });
     

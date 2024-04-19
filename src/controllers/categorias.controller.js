@@ -8,19 +8,17 @@ import { response } from "../utils/responses.js";
 
 const jwt = jsonwebtoken;
 
-//get all categories
+//get all categories actives
 export const GetCategories = async (req, res) => {
 
     try {
         const datos_activos = await Categorias.findAll({
-            where: {
-                activo: true
-            }
-            })
+            where: {activo: true}, attributes: {exclude:['createdAt','updatedAt']}
+        })
         if (datos_activos) {
             response(res, 200, 200, datos_activos);
         } else {
-            response(res, 404);
+            response(res, 404, 404, 'categories not found');
         }
 
     } catch (error) {
@@ -35,12 +33,12 @@ export const GetCategoriesxId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const categoria = await Categorias.findByPk(id)
+        const categoria = await Categorias.findByPk(id, { attributes: {exclude:['createdAt','updatedAt']}})
 
         if (categoria) {
             response(res, 200, 200, categoria);
         } else {
-            response(res, 404);
+            response(res, 404, 404, ' category not found');
         }
 
 
@@ -52,173 +50,97 @@ export const GetCategoriesxId = async (req, res) => {
 
 // create categories
 export const createCategories = async (req, res) => {
+    try {
+        const data = req.Tokendata;
+        const Id_Cat = uniqid();
 
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, data) => {
+        const { Nom_Cat } = req.body;
 
-        if (err) {
-            response(res, 500, 105, "Something went wrong");
+        //verificamos que no exista una categoria con el mismo nombre
+        const categoriaExists = await Categorias.findOne({ where: { Nom_Cat: Nom_Cat } })
+
+        if (categoriaExists) {
+
+            response(res, 409, 409, "category already exist");
+
         } else {
 
-            try {
-
-                const Id_Cat = uniqid();
-
-                const { Nom_Cat } = req.body;
-
-                if (!Nom_Cat) {
-
-                    response(res, 400, 102, "Something went wrong");
-
-                } else {
-
-                    //verify user permissions
-                    const adminPermiso = adminPermissions(data.user.Id_Rol_FK);
-
-                    if (!adminPermiso) {
-
-                        response(res, 403, 403, "you dont have permissions");
-                    } else {
-
-                        //verificamos que no exista una categoria con el mismo nombre
-                        const categoriaExists = await Categorias.findOne({ where: { Nom_Cat: Nom_Cat } })
-
-
-                        if (categoriaExists) {
-
-                            response(res, 500, 107, "category already exist");
-
-                        } else {
-
-                            //create category
-                            const datos = {
-                                Id_Cat: Id_Cat,
-                                Nom_Cat: Nom_Cat.toLowerCase()
-                            }
-
-                            const newCategory = await Categorias.create(datos);
-                            if (newCategory) {
-                                response(res, 200)
-                            } else {
-                                response(res, 500, 500, "Error creating")
-                            }
-
-                        }
-                    }
-                }
-            } catch (err) {
-
-                response(res, 500, 500, "something went wrong");
-
+            //create category
+            const datos = {
+                Id_Cat: Id_Cat,
+                Nom_Cat: Nom_Cat.toLowerCase()
             }
 
+            const newCategory = await Categorias.create(datos);
+            if (newCategory) {
+                response(res, 200)
+            } else {
+                response(res, 500, 500, "Error creating")
+            }
 
         }
 
+    } catch (err) {
 
+        response(res, 500, 500, err);
 
-
-    })
+    }
 }
 
 //update categorias
 export const UpdateCategories = async (req, res) => {
 
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, dat) => {
-        if (err) {
-            response(res, 400, 105, "Something went wrong");
+    try {
+        //Data
+        const { id } = req.params;
+
+        const datos = req.body;
+
+        //verify exist category
+
+        let category = await Categorias.findByPk(id)
+        
+        if (!category) {
+
+            response(res, 404, 404, "Category don't exist");
+
         } else {
-
-            try {
-                const { Id_Rol_FK } = dat.user;
-
-                let adPermision = adminPermissions(Id_Rol_FK);
-
-
-                if (adPermision) {
-
-                    //Data
-                    const { id } = req.params;
-                    const { Nom_Cat } = req.body;
-
-                    //verify exist category
-
-                    const category = await Categorias.findByPk(id)
-
-                    if (!category) {
-
-                        response(res, 404, 404, "Category don't exist");
-
-                    } else {
-
-                        const datos = {
-                 
-                            Nom_Cat: Nom_Cat
-                        }
-
-                        const responses = await Categorias.update(datos,{where:{Id_Cat: id}})
-                        
-                        if(responses){
-                            response(res, 200)
-                        }else{
-                            response(res, 500, 500, "Error updating")
-                        }
-
-                    }
-
-                } else {
-                    response(res, 401, 401, "You don't have permissions");
-                }
-
-            } catch (err) {
-
-                    response(res, 500, 500, "something went wrong");
+            category = category.dataValues;
+            
+            //verificamos que no exista una categoria con el mismo nombre
+            
+            const categoriaExists = await Categorias.findOne({ where: { Nom_Cat: datos.Nom_Cat.toLowerCase() } })
+           
+            if (categoriaExists) {
+                response(res, 409, 409, "New category already registered");
+            } else {
                 
+                const datosEnv = {
+
+                    Nom_Cat: datos.Nom_Cat || category.Nom_Cat
+                
+                }
+                console.log(datos)
+                
+                const responses = await Categorias.update(datosEnv, { where: { Id_Cat: id } })
+
+                if (responses) {
+                    response(res, 200)
+                } else {
+                    response(res, 500, 500, "Error updating")
+                }
             }
+
         }
 
 
-    })
+    } catch (err) {
+
+        response(res, 500, 500, err);
+
+    }
 }
 
 export const deleteCat = async (req, res) => {
-    const {id} = req.params;
-    try {
-        jwt.verify(req.token,process.env.SECRETWORD, async (err,data)=>{
-            if(err){
-                response(res, 401, 401, "Invalid");
-            }else{
-                const permisos = adminPermissions(data.user.Id_Rol_FK);
-                if(permisos){
-                    const data  = await  Categorias.findOne({
-                    where: {
-                        Id_Cat:id
-                    },
-                    })
-                    if(!data){
-                      response(res, 200,200, 'eliminado correctamente')
-                    }
-                    const deletedCat =  Categorias.update(
-                       { activo:false},
-                      {
-                        where: {
-                            Id_Cat:id,
-                            activo:true
-                        } 
-                      }  
-                    )
-                    if(deletedCat){
-                        response(res, 200,200, "eliminado correctamente")
-                    }
-                    else{
-                        response(res, 500,500, "error al eliminar")
-                    }
-    
-                }
-        }
-    });
-        
-    } catch (error) {
-        console.log(error)
-        
-    }
+ 
 }
