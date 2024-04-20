@@ -25,6 +25,7 @@ import Producto from "./productos.models.js";
       }
   });
 
-  Inventarios.belongsTo(Inventarios,{foreignKey: 'PROD_ID_FK'})
+  Inventarios.belongsTo(Producto,{foreignKey: 'PROD_ID_FK'})
+  Producto.hasMany(Inventarios, {foreignKey: 'PROD_ID_FK'})
 
   export default Inventarios;

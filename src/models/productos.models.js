@@ -35,4 +35,6 @@ const Producto = connection.define('Producto', {
     // Other model options go here
   });
 
+  
+
   export default Producto;

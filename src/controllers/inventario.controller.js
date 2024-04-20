@@ -106,12 +106,13 @@ export const UpdateInventarios = async (req, res) => {
             inventory = inventory.dataValues;
             let dataenv;
 
-            if(datos.PROD_ID_FK){
+            if (datos.PROD_ID_FK) {
                 const producto = await Producto.findByPk(datos.PROD_ID_FK);
 
                 if (!producto) {
-                    response(res, 404, 404, "Product not found");
-                }else{
+                    return response(res, 404, 404, "Product not found");
+                  
+                } else {
 
                     dataenv = {
                         PROD_ID_FK: datos.PROD_ID_FK,
@@ -119,20 +120,22 @@ export const UpdateInventarios = async (req, res) => {
                         INV_EST: datos.INV_EST || inventory.INV_EST
                     }
                 }
-            }else{
+
+            } else {
                 dataenv = {
                     PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
                     INV_EST: datos.INV_EST || inventory.INV_EST
                 }
             }
 
-            const responses = await Inventarios.update(dataenv, { where: { INV_ID: id } })
+                const responses = await Inventarios.update(dataenv, { where: { INV_ID: id } })
 
-            if (responses) {
-                response(res, 200)
-            } else {
-                response(res, 500, 500, "Error updating")
-            }
+                if (responses) {
+                    response(res, 200)
+                } else {
+                    response(res, 500, 500, "Error updating")
+                }
+      
 
         }
 

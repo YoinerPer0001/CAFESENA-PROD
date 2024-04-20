@@ -1,9 +1,10 @@
 import { connection } from "../database/db.js";
 import { DataTypes } from "sequelize";
 import Producto from "./productos.models.js";
+import Encabezados from "./encabezado.model.js";
 
 
-const detalle_compra = connection.define('detalle_compra', {
+const detalle = connection.define('detalle', {
     Id_Detalle: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -24,12 +25,15 @@ const detalle_compra = connection.define('detalle_compra', {
     Precio_U:{
         type: DataTypes.DECIMAL,
         allowNull: false,
-    },
-    Prov_Id_FK:{
-        type:DataTypes.DATE,
-        allowNull: false
     }
 })
 
-export default detalle_compra;
+
+Producto.hasMany(detalle, {foreignKey: 'Id_Prod_Fk',})
+detalle.belongsTo(Producto, {foreignKey: 'Id_Prod_Fk', targetKey:'PROD_ID'})
+
+Encabezados.hasMany(detalle,  {foreignKey: 'Id_Enc_FK'})
+detalle.belongsTo(Encabezados, {foreignKey: 'Id_Enc_FK',  targetKey: 'ENC_ID'})
+
+export default detalle;
 

@@ -28,9 +28,6 @@ export const Encabezados = connection.define('Encabezados', {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
     }
-}, {
-    tableName: 'encabezado', // Cambiado a 'categoria' en minúsculas y en singular
-    timestamps: false, // No se agregan automáticamente createdAt y updatedAt
 });
 
 

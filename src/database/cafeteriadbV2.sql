@@ -38,65 +38,58 @@ insert  into `categorias`(`Id_Cat`,`Nom_Cat`,`createdAt`,`updatedAt`,`activo`) v
 (10,'desarrollo web','2024-04-18 22:37:38','2024-04-18 22:37:38',1),
 (11,'IA','2024-04-19 01:27:37','2024-04-19 01:28:57',1);
 
-/*Table structure for table `detalle_compra` */
+/*Table structure for table `detalles` */
 
-DROP TABLE IF EXISTS `detalle_compra`;
+DROP TABLE IF EXISTS `detalles`;
 
-CREATE TABLE `detalle_compra` (
+CREATE TABLE `detalles` (
   `Id_Detalle` varchar(100) NOT NULL,
   `Id_Enc_FK` varchar(100) DEFAULT NULL,
-  `Id_Prod_Fk` varchar(100) DEFAULT NULL,
-  `cantidad` int(100) DEFAULT NULL,
-  `Precio_U` decimal(10,2) DEFAULT NULL,
-  `Prov_Id_FK` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`Id_Detalle`),
-  KEY `Id_Compra` (`Id_Enc_FK`),
-  KEY `Id_Prod_Fk` (`Id_Prod_Fk`),
-  KEY `Prov_Id_FK` (`Prov_Id_FK`),
-  CONSTRAINT `detalle_compra_ibfk_1` FOREIGN KEY (`Id_Enc_FK`) REFERENCES `encabezado` (`ENC_ID`),
-  CONSTRAINT `detalle_compra_ibfk_2` FOREIGN KEY (`Id_Prod_Fk`) REFERENCES `productos` (`PROD_ID`),
-  CONSTRAINT `detalle_compra_ibfk_3` FOREIGN KEY (`Prov_Id_FK`) REFERENCES `proveedors` (`PROV_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-/*Data for the table `detalle_compra` */
-
-/*Table structure for table `detalle_venta` */
-
-DROP TABLE IF EXISTS `detalle_venta`;
-
-CREATE TABLE `detalle_venta` (
-  `Id_Det_Vent` varchar(100) NOT NULL,
-  `Id_Enc_FK` varchar(100) DEFAULT NULL,
-  `Id_Prod_Fk` varchar(100) DEFAULT NULL,
   `cantidad` int(100) DEFAULT NULL,
   `Precio_U` decimal(10,2) DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL,
-  PRIMARY KEY (`Id_Det_Vent`),
+  `Id_Prod_Fk` varchar(100) DEFAULT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id_Detalle`),
   KEY `Id_Enc_FK` (`Id_Enc_FK`),
   KEY `Id_Prod_Fk` (`Id_Prod_Fk`),
-  CONSTRAINT `detalle_venta_ibfk_1` FOREIGN KEY (`Id_Enc_FK`) REFERENCES `encabezado` (`ENC_ID`),
-  CONSTRAINT `detalle_venta_ibfk_2` FOREIGN KEY (`Id_Prod_Fk`) REFERENCES `productos` (`PROD_ID`)
+  CONSTRAINT `detalles_ibfk_1` FOREIGN KEY (`Id_Enc_FK`) REFERENCES `encabezados` (`ENC_ID`),
+  CONSTRAINT `detalles_ibfk_2` FOREIGN KEY (`Id_Prod_Fk`) REFERENCES `productos` (`PROD_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `detalle_venta` */
+/*Data for the table `detalles` */
 
-/*Table structure for table `encabezado` */
+insert  into `detalles`(`Id_Detalle`,`Id_Enc_FK`,`cantidad`,`Precio_U`,`total`,`Id_Prod_Fk`,`createdAt`,`updatedAt`) values 
+('1','1',55,21212.00,43342.00,'erxyjd754lv79ccg9','2024-04-19 17:55:44','2024-04-20 00:27:53'),
+('erxyjd1wwlv7cpoca','1',1,21212.00,NULL,'erxyjd754lv79ccg9','2024-04-20 00:18:35','2024-04-20 00:18:35'),
+('erxyjd1wwlv7cqfnc','1',1,21212.00,NULL,'erxyjd754lv79ccg9','2024-04-20 00:19:10','2024-04-20 00:19:10'),
+('erxyjd99clv7d40ix','1',1,3434.00,NULL,'erxyjd754lv79ccg9','2024-04-20 00:29:43','2024-04-20 00:29:43');
 
-DROP TABLE IF EXISTS `encabezado`;
+/*Table structure for table `encabezados` */
 
-CREATE TABLE `encabezado` (
+DROP TABLE IF EXISTS `encabezados`;
+
+CREATE TABLE `encabezados` (
   `ENC_ID` varchar(100) NOT NULL,
   `FECH_ENC` date DEFAULT NULL,
-  `MET_PAGO` char(1) DEFAULT NULL,
+  `MET_PAGO` char(1) DEFAULT NULL COMMENT '1: efectivo, 2: pse',
   `TOTAL` decimal(10,2) DEFAULT NULL,
   `ID_USER_FK` varchar(100) DEFAULT NULL,
-  `TIPO_ENCABE` char(1) DEFAULT NULL,
+  `TIPO_ENCABE` char(1) DEFAULT NULL COMMENT '1: compra, 2:venta',
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`ENC_ID`),
   KEY `Id_User_FK` (`ID_USER_FK`),
-  CONSTRAINT `encabezado_ibfk_2` FOREIGN KEY (`ID_USER_FK`) REFERENCES `usuarios` (`Id_User`)
+  CONSTRAINT `encabezados_ibfk_2` FOREIGN KEY (`ID_USER_FK`) REFERENCES `usuarios` (`Id_User`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `encabezado` */
+/*Data for the table `encabezados` */
+
+insert  into `encabezados`(`ENC_ID`,`FECH_ENC`,`MET_PAGO`,`TOTAL`,`ID_USER_FK`,`TIPO_ENCABE`,`createdAt`,`updatedAt`) values 
+('1','2024-04-19','2',3424324.00,'erxyjd1aclv5t60t8','1','2024-04-19 17:53:53','2024-04-19 23:42:36'),
+('erxyjd5swlv7aexs6','2024-04-19','1',12332.00,'erxyjd1aclv5t60t8','1','2024-04-19 23:14:14','2024-04-19 23:14:14'),
+('erxyjd9gglv7a73kj','2024-04-19','1',12332.00,'erxyjd1aclv5t60t8','1','2024-04-19 23:08:09','2024-04-19 23:08:09');
 
 /*Table structure for table `factura` */
 
@@ -109,7 +102,7 @@ CREATE TABLE `factura` (
   `FACT_FECH` date NOT NULL,
   PRIMARY KEY (`FACT_ID`),
   KEY `id_VentaFK` (`ENC_ID_FK`),
-  CONSTRAINT `factura_ibfk_3` FOREIGN KEY (`ENC_ID_FK`) REFERENCES `encabezado` (`ENC_ID`)
+  CONSTRAINT `factura_ibfk_3` FOREIGN KEY (`ENC_ID_FK`) REFERENCES `encabezados` (`ENC_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `factura` */
@@ -123,6 +116,9 @@ CREATE TABLE `inventarios` (
   `PROD_ID_FK` varchar(100) DEFAULT NULL,
   `PROD_CANT` int(11) DEFAULT NULL,
   `INV_EST` char(1) DEFAULT NULL COMMENT '1:STOK, 2:AGOTADO, 3:RESERVADO',
+  `LOTE` varchar(100) DEFAULT NULL,
+  `FECH_REC` date DEFAULT NULL,
+  `FECH_VENC` date DEFAULT NULL,
   `createdAt` datetime DEFAULT NULL,
   `updatedAt` datetime DEFAULT NULL,
   `activo` tinyint(4) DEFAULT NULL,
@@ -133,10 +129,9 @@ CREATE TABLE `inventarios` (
 
 /*Data for the table `inventarios` */
 
-insert  into `inventarios`(`INV_ID`,`PROD_ID_FK`,`PROD_CANT`,`INV_EST`,`createdAt`,`updatedAt`,`activo`) values 
-('9p6bgwklu1dgwqx','4343',4242,'A','2024-03-21 15:13:26','2024-03-21 15:19:14',NULL),
-('9p6bgwklu1dh8vq','4343',10,'A','2024-03-21 15:13:41','2024-03-21 15:13:41',NULL),
-('9p6bgwklu1dhaz9','4343',10,'A','2024-03-21 15:13:44','2024-03-21 15:13:44',NULL);
+insert  into `inventarios`(`INV_ID`,`PROD_ID_FK`,`PROD_CANT`,`INV_EST`,`LOTE`,`FECH_REC`,`FECH_VENC`,`createdAt`,`updatedAt`,`activo`) values 
+('erxyjd46slv7b2n1e','erxyjd754lv79ccg9',10,'A',NULL,NULL,NULL,'2024-04-19 23:32:40','2024-04-19 23:32:40',NULL),
+('erxyjdawwlv7b66a5','erxyjd754lv79ccg9',4,'A',NULL,NULL,NULL,'2024-04-19 23:35:25','2024-04-19 23:43:40',NULL);
 
 /*Table structure for table `localizacions` */
 
@@ -157,8 +152,8 @@ CREATE TABLE `localizacions` (
 /*Data for the table `localizacions` */
 
 insert  into `localizacions`(`Id_Loc`,`Dir_Ip`,`Id_User_FK`,`createdAt`,`updatedAt`,`activo`) values 
-(50,'192.168.0.1','hle1ffcmolul8uo6n','2024-04-04 12:59:33','2024-04-04 16:06:24',1),
-(434,'1111','hle1ffcmolul8uo6n','2024-04-04 11:02:49','2024-04-04 16:09:19',0),
+(50,'192.168.9.1','erxyjd7a4lv603r9h','2024-04-04 12:59:33','2024-04-19 18:09:43',1),
+(434,'192.168.0.1','hle1ffcmolul8uo6n','2024-04-04 11:02:49','2024-04-04 16:09:19',0),
 (435,'192.168.0.1','erxyjd1aclv5t60t8','2024-04-18 22:23:39','2024-04-18 22:23:39',NULL),
 (437,'192.168.0.1','erxyjd7a4lv603r9h','2024-04-19 01:37:50','2024-04-19 01:37:50',NULL),
 (438,'192.168.0.5','erxyjd7a4lv603r9h','2024-04-19 01:51:07','2024-04-19 01:51:07',NULL),
@@ -186,10 +181,24 @@ CREATE TABLE `productos` (
 /*Data for the table `productos` */
 
 insert  into `productos`(`PROD_ID`,`PROD_COD`,`PROD_NOM`,`PROD_DESC`,`PROD_PREC`,`CAT_ID_FK`,`createdAt`,`updatedAt`) values 
-('4343','4324','NEVERA','1134380338',12322222.00,1,'2024-03-20 22:01:13','2024-03-21 03:23:35'),
-('ahyvadclu0nwpaz','0022','tv','full hd 4k',1502300.00,1,'2024-03-21 03:17:53','2024-03-21 03:17:53'),
-('erxyjd154lv6xxawz','34432','tv','full hd 4k samsung',1502300.00,1,'2024-04-19 17:24:36','2024-04-19 17:24:36'),
-('erxyjd3molv6xyonw','34324','tv','full hd 4k OLIMPO',1502300.00,1,'2024-04-19 17:25:41','2024-04-19 17:30:26');
+('erxyjd754lv79ccg9','0022','CEL','full hd 4k',1502300.00,1,'2024-04-19 22:44:14','2024-04-19 22:44:41');
+
+/*Table structure for table `proveedor_productos` */
+
+DROP TABLE IF EXISTS `proveedor_productos`;
+
+CREATE TABLE `proveedor_productos` (
+  `Id_Prov_FK` varchar(100) DEFAULT NULL,
+  `Id_Prod_FK` varchar(100) DEFAULT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `UpdatedAt` datetime DEFAULT NULL,
+  KEY `Id_Prov_FK` (`Id_Prov_FK`),
+  KEY `Id_Prod_FK` (`Id_Prod_FK`),
+  CONSTRAINT `proveedor_productos_ibfk_1` FOREIGN KEY (`Id_Prov_FK`) REFERENCES `proveedors` (`PROV_ID`),
+  CONSTRAINT `proveedor_productos_ibfk_2` FOREIGN KEY (`Id_Prod_FK`) REFERENCES `productos` (`PROD_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+/*Data for the table `proveedor_productos` */
 
 /*Table structure for table `proveedors` */
 
@@ -210,7 +219,8 @@ CREATE TABLE `proveedors` (
 insert  into `proveedors`(`PROV_ID`,`PROV_NOM`,`PROV_CONTACTO`,`PROV_EST`,`createdAt`,`updatedAt`) values 
 ('9p6b9dolu1f5b9z','Proveedor32323231',NULL,'A','2024-03-21 16:00:24','2024-03-21 16:11:48'),
 ('9p6bfhglu1cd6tl','Proveedor 1',NULL,'A','2024-03-21 14:42:33','2024-03-21 14:42:33'),
-('erxyjd4x0lv6wybq7','POSTOBON','postobon@gmail.com','A','2024-04-19 16:57:24','2024-04-19 17:36:38');
+('erxyjd4x0lv6wybq7','COCA-COLA','postobon@gmail.com','A','2024-04-19 16:57:24','2024-04-19 22:47:02'),
+('erxyjd754lv79fa6s','postobon','postobon@gmail.com','A','2024-04-19 22:46:31','2024-04-19 22:46:31');
 
 /*Table structure for table `roles` */
 
@@ -247,7 +257,7 @@ CREATE TABLE `tokens` (
   PRIMARY KEY (`Id_Token`),
   KEY `Usuario_Id` (`User_Id_FK`),
   CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`User_Id_FK`) REFERENCES `usuarios` (`Id_User`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `tokens` */
 
@@ -266,7 +276,10 @@ insert  into `tokens`(`Id_Token`,`Token`,`Fec_Caducidad`,`User_Id_FK`,`Tipo_toke
 (28,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNDkyNzQ2LCJleHAiOjE3MTM1NzkxNDZ9.g','1713579146','hle1ffcmolul8uo6n','2','2024-04-19 02:12:26','2024-04-19 02:12:26'),
 (29,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJlcnh5amQxYWNsdjV0NjB0OCIsIk5vbV9Vc2VyIjoiQW5kcmVhIiwiQXBlX1VzZXIiOiJwZXJleiIsIkVtYV9Vc2VyIjoid2lyb0BnbWFpbC5jb20iLCJJZF9Sb2xfRksiOjN9LCJpYXQiOjE3MTM0OTQ0NTcsImV4cCI6MTcxMzU4MDg1N30.E1RCKkFm0l','1713580857','erxyjd1aclv5t60t8','1','2024-04-19 02:40:57','2024-04-19 02:40:57'),
 (30,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJlcnh5amQxYWNsdjV0NjB0OCIsIk5vbV9Vc2VyIjoiQW5kcmVhIiwiQXBlX1VzZXIiOiJwZXJleiIsIkVtYV9Vc2VyIjoid2lyb0BnbWFpbC5jb20iLCJJZF9Sb2xfRksiOjN9LCJpYXQiOjE3MTM0OTQ0ODcsImV4cCI6MTcxMzU4MDg4N30.DThE5pj_2P','1713580887','erxyjd1aclv5t60t8','1','2024-04-19 02:41:27','2024-04-19 02:41:27'),
-(31,'227611','1713495098','hle1ffcmolul8uo6n','1','2024-04-19 02:41:38','2024-04-19 02:45:31');
+(31,'227611','1713495098','hle1ffcmolul8uo6n','1','2024-04-19 02:41:38','2024-04-19 02:45:31'),
+(32,'789665','1713556172','hle1ffcmolul8uo6n','3','2024-04-19 19:39:32','2024-04-19 19:39:32'),
+(33,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNTU1ODMyLCJleHAiOjE3MTM2NDIyMzJ9.v','1713642232','hle1ffcmolul8uo6n','2','2024-04-19 19:43:52','2024-04-19 19:43:52'),
+(34,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNTY2NjMwLCJleHAiOjE3MTM2NTMwMzB9.i','1713653030','hle1ffcmolul8uo6n','2','2024-04-19 22:43:50','2024-04-19 22:43:50');
 
 /*Table structure for table `usuarios` */
 
