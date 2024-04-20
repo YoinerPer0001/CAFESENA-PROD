@@ -11,6 +11,7 @@ import routesProveedor from './v1/routes/proveedor.routes.js';
 import routesEncabezados from './v1/routes/encabezados.routes.js';
 import routesDetalles from './v1/routes/detalles.routes.js';
 import routesFacturas from './v1/routes/facturas.routes.js';
+import routesProvProd from './v1/routes/proveedores_productos.routes.js';
 import { swaggerDocs } from './v1/swagger.js';
 import cors from 'cors';
 
@@ -32,6 +33,7 @@ app.use(routesProveedor);
 app.use(routesEncabezados);
 app.use(routesDetalles)
 app.use(routesFacturas)
+app.use(routesProvProd);
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');

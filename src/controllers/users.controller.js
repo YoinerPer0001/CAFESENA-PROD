@@ -147,6 +147,7 @@ export const UpdateUserData = async (req, res) => {
         const { id } = req.params;
 
         const UserData = req.body;
+        let NewEmail = null;
 
         //get actual data
         let actualData = await Usuario.findByPk(id);
@@ -154,18 +155,28 @@ export const UpdateUserData = async (req, res) => {
         if (actualData) {
             actualData = actualData.dataValues;
 
+            if (UserData.Ema_User) {
+                const user = await Usuario.findOne({ where: { Ema_User: UserData.Ema_User } });
+
+                if (user) {
+                    return response(res, 409, 409, "Email is registered");
+                }else{
+                    NewEmail = UserData.Ema_User;
+                }
+            }
+
             const objUpdate = {
-                
+
                 Nom_User: UserData.Nom_User || actualData.Nom_User,
                 Ape_User: UserData.Ape_User || actualData.Ape_User,
                 Tel_User: UserData.Tel_User || actualData.Tel_User,
-                Ema_User: UserData.Ema_User || actualData.Ema_User,
+                Ema_User: NewEmail || actualData.Ema_User,
                 Fot_User: UserData.Fot_User || actualData.Tel_User
             }
 
             //update data
 
-            const updatedData = await Usuario.update(objUpdate, {where: {Id_User: id}});
+            const updatedData = await Usuario.update(objUpdate, { where: { Id_User: id } });
 
             if (updatedData) {
                 response(res, 200, 200);
@@ -173,7 +184,7 @@ export const UpdateUserData = async (req, res) => {
                 response(res, 500, 500, "Error updating");
             }
 
-        }else{
+        } else {
             response(res, 404, 404, "User not found");
         }
 
@@ -257,124 +268,124 @@ export const loginUser = async (req, res) => {
 
 
 
-        const { Ema_User, Pass_User, Dir_Ip } = req.body;
+    const { Ema_User, Pass_User, Dir_Ip } = req.body;
 
 
-        let user = await Usuario.findOne({ where: { Ema_User: Ema_User } });
+    let user = await Usuario.findOne({ where: { Ema_User: Ema_User } });
 
 
-        if (user) {
-            user = user.dataValues;
+    if (user) {
+        user = user.dataValues;
 
-            //verificamos la password
-            const passDecripted = await bcrypt.compare(Pass_User, user.Pass_User);
+        //verificamos la password
+        const passDecripted = await bcrypt.compare(Pass_User, user.Pass_User);
 
-            if (passDecripted) {// if password true
+        if (passDecripted) {// if password true
 
-                //verificamos la direccion ip se encuentre registrada previamente
-                const objLoc = {
-                    Id_User_FK: user.Id_User,
-                    Dir_Ip: Dir_Ip
+            //verificamos la direccion ip se encuentre registrada previamente
+            const objLoc = {
+                Id_User_FK: user.Id_User,
+                Dir_Ip: Dir_Ip
+            }
+
+            let loc = await Localizacion.findOne({ where: objLoc });
+
+
+            //VERIFICAMOS IP
+
+            if (loc) {
+                loc = loc.dataValues;
+
+                // si existe generamos el token y lo guardamos en la db
+                const userData = {
+                    Id_User: user.Id_User,
+                    Nom_User: user.Nom_User,
+                    Ape_User: user.Ape_User,
+                    Ema_User: user.Ema_User,
+                    Id_Rol_FK: user.Id_Rol_FK,
                 }
 
-                let loc = await Localizacion.findOne({ where: objLoc });
+                //generamos token y save on db
+                const datosToken = await TokenDb(userData);
 
+                if (datosToken) {
 
-                //VERIFICAMOS IP
-
-                if (loc) {
-                    loc = loc.dataValues;
-
-                    // si existe generamos el token y lo guardamos en la db
-                    const userData = {
-                        Id_User: user.Id_User,
-                        Nom_User: user.Nom_User,
-                        Ape_User: user.Ape_User,
-                        Ema_User: user.Ema_User,
-                        Id_Rol_FK: user.Id_Rol_FK,
+                    const tokendecode = jwt.decode(datosToken, process.env.SECRETWORD);
+                    const data1 = {
+                        User_Id_FK: userData.Id_User,
+                        Token: datosToken,
+                        Fec_Caducidad: tokendecode.exp,
+                        Tipo_token: 2
                     }
 
-                    //generamos token y save on db
-                    const datosToken = await TokenDb(userData);
 
-                    if (datosToken) {
-
-                        const tokendecode = jwt.decode(datosToken, process.env.SECRETWORD);
-                        const data1 = {
-                            User_Id_FK: userData.Id_User,
-                            Token: datosToken,
-                            Fec_Caducidad: tokendecode.exp,
-                            Tipo_token: 2
-                        }
+                    // guardamos en Db
+                    const resp = await Token.create(data1)
 
 
-                        // guardamos en Db
-                        const resp = await Token.create(data1)
+                    if (resp) {
+                        const cookieP = cookieParser();
 
 
-                        if (resp) {
-                            const cookieP = cookieParser();
+                        //serializar
+                        const serialized = serialize('sessionToken', datosToken, {
+                            httpOnly: true,
+                            secure: true,
+                            sameSite: 'none',
+                            maxAge: 86400000,
+                            path: '/'
+                        })
+                        res.setHeader('Set-Cookie', serialized)
 
+                        response(res, 200, 200, "success Login");
 
-                            //serializar
-                            const serialized = serialize('sessionToken', datosToken, {
-                                httpOnly: true,
-                                secure: true,
-                                sameSite: 'none',
-                                maxAge: 86400000,
-                                path: '/'
-                            })
-                            res.setHeader('Set-Cookie', serialized)
+                    } else {
 
-                            response(res, 200, 200, "success Login");
-
-                        } else {
-
-                            response(res, 500, 500, "Error saving token");
-                        }
-
-
-
-
+                        response(res, 500, 500, "Error saving token");
                     }
 
 
 
-                } else {
-
-
-                    //enviamos codigo de verificacion para guardar la nueva ip
-                    const { codigo, exp } = await GenCodigosTemp(600);
-                    //guardamos en la base de datos
-                    const objTok = {
-                        Token: codigo,
-                        Fec_Caducidad: exp,
-                        User_Id_FK: user.Id_User,
-                        Tipo_token: 3
-                    }
-
-
-
-                    //guardamos el token en la db
-                    const token = await Token.create(objTok)
-
-
-                    if (token) {
-                        mensaje_Confirm_Login(user.Ema_User, user.Nom_User, codigo);
-
-                        response(res, 401, 401, "Verification code send success (update new ip)");
-                    }
 
                 }
+
+
 
             } else {
 
-                response(res, 400, 103, "User or password incorrect");
+
+                //enviamos codigo de verificacion para guardar la nueva ip
+                const { codigo, exp } = await GenCodigosTemp(600);
+                //guardamos en la base de datos
+                const objTok = {
+                    Token: codigo,
+                    Fec_Caducidad: exp,
+                    User_Id_FK: user.Id_User,
+                    Tipo_token: 3
+                }
+
+
+
+                //guardamos el token en la db
+                const token = await Token.create(objTok)
+
+
+                if (token) {
+                    mensaje_Confirm_Login(user.Ema_User, user.Nom_User, codigo);
+
+                    response(res, 401, 401, "Verification code send success (update new ip)");
+                }
+
             }
 
         } else {
+
             response(res, 400, 103, "User or password incorrect");
         }
+
+    } else {
+        response(res, 400, 103, "User or password incorrect");
+    }
 
 }
 
@@ -455,7 +466,7 @@ export const ValidateCod = async (req, res) => {
 //funtions
 
 // create token
-export const TokenDb = async (userData)=> {
+export const TokenDb = async (userData) => {
 
 
     const token = jwt.sign({ user: userData }, process.env.SECRETWORD, { expiresIn: '24h' });

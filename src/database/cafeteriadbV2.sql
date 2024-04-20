@@ -110,7 +110,7 @@ CREATE TABLE `facturas` (
 /*Data for the table `facturas` */
 
 insert  into `facturas`(`FACT_ID`,`FACT_FECH`,`ID_EMPLEADO`,`createdAt`,`updatedAt`) values 
-('1','2024-04-25','erxyjd1aclv5t60t8','2024-04-19 20:26:25','2024-04-20 04:13:47'),
+('1','2024-04-25','erxyjd1aclv5t60t8','2024-04-19 20:26:25','2024-04-20 13:57:28'),
 ('erxyjd5swlv7aexs6','2024-04-20','hle1ffcmolul8uo6n','2024-04-20 03:42:54','2024-04-20 03:42:54');
 
 /*Table structure for table `inventarios` */
@@ -187,17 +187,20 @@ CREATE TABLE `productos` (
 /*Data for the table `productos` */
 
 insert  into `productos`(`PROD_ID`,`PROD_COD`,`PROD_NOM`,`PROD_DESC`,`PROD_PREC`,`CAT_ID_FK`,`createdAt`,`updatedAt`) values 
-('erxyjd754lv79ccg9','0022','CEL','full hd 4k',1502300.00,1,'2024-04-19 22:44:14','2024-04-19 22:44:41');
+('erxyjd754lv79ccg9','0022','CEL','full hd 4k',1502300.00,1,'2024-04-19 22:44:14','2024-04-19 22:44:41'),
+('erxyjd92wlv86v4x0','3233','GASEOSA 100ML UVA','GASEOSA 100ML UVA',1000.00,1,'2024-04-20 14:22:38','2024-04-20 14:22:38');
 
 /*Table structure for table `proveedor_productos` */
 
 DROP TABLE IF EXISTS `proveedor_productos`;
 
 CREATE TABLE `proveedor_productos` (
+  `Id_Prov_Prod` varchar(100) NOT NULL,
   `Id_Prov_FK` varchar(100) DEFAULT NULL,
   `Id_Prod_FK` varchar(100) DEFAULT NULL,
   `createdAt` datetime DEFAULT NULL,
   `UpdatedAt` datetime DEFAULT NULL,
+  PRIMARY KEY (`Id_Prov_Prod`),
   KEY `Id_Prov_FK` (`Id_Prov_FK`),
   KEY `Id_Prod_FK` (`Id_Prod_FK`),
   CONSTRAINT `proveedor_productos_ibfk_1` FOREIGN KEY (`Id_Prov_FK`) REFERENCES `proveedors` (`PROV_ID`),
@@ -205,6 +208,10 @@ CREATE TABLE `proveedor_productos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `proveedor_productos` */
+
+insert  into `proveedor_productos`(`Id_Prov_Prod`,`Id_Prov_FK`,`Id_Prod_FK`,`createdAt`,`UpdatedAt`) values 
+('1','erxyjd754lv79fa6s','erxyjd92wlv86v4x0','2024-04-20 09:20:15','2024-04-20 15:02:39'),
+('erxyjd64glv87og0t','erxyjd4x0lv6wybq7','erxyjd754lv79ccg9','2024-04-20 14:45:25','2024-04-20 14:45:25');
 
 /*Table structure for table `proveedors` */
 
@@ -263,7 +270,7 @@ CREATE TABLE `tokens` (
   PRIMARY KEY (`Id_Token`),
   KEY `Usuario_Id` (`User_Id_FK`),
   CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`User_Id_FK`) REFERENCES `usuarios` (`Id_User`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `tokens` */
 
@@ -285,7 +292,8 @@ insert  into `tokens`(`Id_Token`,`Token`,`Fec_Caducidad`,`User_Id_FK`,`Tipo_toke
 (31,'227611','1713495098','hle1ffcmolul8uo6n','1','2024-04-19 02:41:38','2024-04-19 02:45:31'),
 (32,'789665','1713556172','hle1ffcmolul8uo6n','3','2024-04-19 19:39:32','2024-04-19 19:39:32'),
 (33,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNTU1ODMyLCJleHAiOjE3MTM2NDIyMzJ9.v','1713642232','hle1ffcmolul8uo6n','2','2024-04-19 19:43:52','2024-04-19 19:43:52'),
-(34,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNTY2NjMwLCJleHAiOjE3MTM2NTMwMzB9.i','1713653030','hle1ffcmolul8uo6n','2','2024-04-19 22:43:50','2024-04-19 22:43:50');
+(34,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNTY2NjMwLCJleHAiOjE3MTM2NTMwMzB9.i','1713653030','hle1ffcmolul8uo6n','2','2024-04-19 22:43:50','2024-04-19 22:43:50'),
+(35,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzNjI1OTI1LCJleHAiOjE3MTM3MTIzMjV9.L','1713712325','hle1ffcmolul8uo6n','2','2024-04-20 15:12:05','2024-04-20 15:12:05');
 
 /*Table structure for table `usuarios` */
 
@@ -311,7 +319,7 @@ CREATE TABLE `usuarios` (
 /*Data for the table `usuarios` */
 
 insert  into `usuarios`(`Id_User`,`Nom_User`,`Ape_User`,`Tel_User`,`Ema_User`,`Pass_User`,`Id_Rol_FK`,`Fot_User`,`Est_Email_User`,`createdAt`,`updatedAt`) values 
-('erxyjd1aclv5t60t8','Andrea','perez','3004445577','wiro@gmail.com','$2b$10$06bglGa1ntkEdgsp9UV4Gejkc72Wm.XLZ9qWGAD3ZrtfXq3irIN0q',3,'3004445577',0,'2024-04-18 22:23:39','2024-04-19 02:06:28'),
+('erxyjd1aclv5t60t8','Wiro','De avila','3004445577','cr7@gmail.com','$2b$10$06bglGa1ntkEdgsp9UV4Gejkc72Wm.XLZ9qWGAD3ZrtfXq3irIN0q',3,'3004445577',0,'2024-04-18 22:23:39','2024-04-20 15:16:45'),
 ('erxyjd7a4lv603r9h','Jairo','De avila',NULL,'josecortesandrade41@gmail.com','$2b$10$B18zG/zCfjMjEjM.bGgzhur2y.AKNiUHjnW02Q6q4gRN9yN.37JFy',3,NULL,1,'2024-04-19 01:37:50','2024-04-19 01:43:58'),
 ('hle1ffcmolul8uo6n','petro','perez',NULL,'yoinerpertuz@gmail.com','$2b$10$vK83JCqzwie8eda4lwaxw.cL2TNsAdWzR9mbfnOlZ/z9vkv3/OhV6',1,NULL,0,'2024-04-04 12:59:33','2024-04-04 12:59:33');
 
