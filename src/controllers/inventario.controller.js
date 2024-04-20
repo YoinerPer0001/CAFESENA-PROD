@@ -41,7 +41,13 @@ export const GetInventarioxId = async (req, res) => {
         const inventory = await Inventarios.findByPk(id,
             {
                 attributes: { exclude: ['createdAt', 'updatedAt'] },
-                where: { ESTADO_REGISTRO: 1 } // REGISTROS ACTIVOS
+                where: { ESTADO_REGISTRO: 1 } ,// REGISTROS ACTIVOS
+                include:[
+                    {
+                        model: Producto,
+                        attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    }
+                ]
             })
 
         if (inventory) {

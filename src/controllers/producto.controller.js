@@ -12,7 +12,15 @@ export const GetProductos = async (req, res) => {
 
     try {
 
-        const data = await Producto.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } })
+        const data = await Producto.findAll({ 
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
+            include:[
+                {
+                    model: Categorias,
+                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                }
+            ]
+         })
 
         if (data) {
             response(res, 200, 200, data)
@@ -34,7 +42,16 @@ export const GetProductosId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const data = await Producto.findByPk(id, { attributes: { exclude: ['createdAt', 'updatedAt'] } })
+        const data = await Producto.findByPk(id, 
+            { attributes: { exclude: ['createdAt', 'updatedAt'] },
+            include:[
+                {
+                    model: Categorias,
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'activo'] },
+
+                }
+            ]
+         })
 
         if (data) {
             response(res, 200, 200, data)
