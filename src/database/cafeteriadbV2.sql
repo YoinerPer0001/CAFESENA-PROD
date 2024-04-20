@@ -121,13 +121,13 @@ CREATE TABLE `inventarios` (
   `INV_ID` varchar(100) NOT NULL,
   `PROD_ID_FK` varchar(100) DEFAULT NULL,
   `PROD_CANT` int(11) DEFAULT NULL,
-  `INV_EST` char(1) DEFAULT NULL COMMENT '1:STOK, 2:AGOTADO, 3:RESERVADO',
+  `INV_EST` char(1) DEFAULT NULL COMMENT 'S:STOK, A:AGOTADO, R:RESERVADO',
   `LOTE` varchar(100) DEFAULT NULL,
   `FECH_REC` date DEFAULT NULL,
   `FECH_VENC` date DEFAULT NULL,
+  `ESTADO_REGISTRO` int(1) DEFAULT NULL COMMENT '1:ACTIVO, 0:ELIMINADO',
   `createdAt` datetime DEFAULT NULL,
   `updatedAt` datetime DEFAULT NULL,
-  `activo` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`INV_ID`),
   KEY `producto_idFK` (`PROD_ID_FK`),
   CONSTRAINT `inventarios_ibfk_1` FOREIGN KEY (`PROD_ID_FK`) REFERENCES `productos` (`PROD_ID`)
@@ -135,9 +135,11 @@ CREATE TABLE `inventarios` (
 
 /*Data for the table `inventarios` */
 
-insert  into `inventarios`(`INV_ID`,`PROD_ID_FK`,`PROD_CANT`,`INV_EST`,`LOTE`,`FECH_REC`,`FECH_VENC`,`createdAt`,`updatedAt`,`activo`) values 
-('erxyjd46slv7b2n1e','erxyjd754lv79ccg9',10,'A',NULL,NULL,NULL,'2024-04-19 23:32:40','2024-04-19 23:32:40',NULL),
-('erxyjdawwlv7b66a5','erxyjd754lv79ccg9',4,'A',NULL,NULL,NULL,'2024-04-19 23:35:25','2024-04-19 23:43:40',NULL);
+insert  into `inventarios`(`INV_ID`,`PROD_ID_FK`,`PROD_CANT`,`INV_EST`,`LOTE`,`FECH_REC`,`FECH_VENC`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
+('erxyjd46olv89rcma','erxyjd754lv79ccg9',10,'S','34342','2024-04-25','2024-04-30',0,'2024-04-20 15:43:40','2024-04-20 16:01:43'),
+('erxyjd46slv7b2n1e','erxyjd754lv79ccg9',10,'S','34','2024-04-20','2024-04-20',1,'2024-04-19 23:32:40','2024-04-20 15:47:07'),
+('erxyjd5fwlv89oavh','erxyjd754lv79ccg9',10,'A','34342','2024-04-25','2024-04-30',1,'2024-04-20 15:41:18','2024-04-20 15:41:18'),
+('erxyjdawwlv7b66a5','erxyjd754lv79ccg9',4,'A','3423','2024-04-20','2024-04-20',1,'2024-04-19 23:35:25','2024-04-19 23:43:40');
 
 /*Table structure for table `localizacions` */
 

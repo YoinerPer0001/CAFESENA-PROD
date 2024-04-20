@@ -13,7 +13,10 @@ export const GetInventarios = async (req, res) => {
 
     try {
 
-        const inventory = await Inventarios.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } })
+        const inventory = await Inventarios.findAll({
+            attributes: { exclude: ['createdAt', 'updatedAt'] },
+            where: { ESTADO_REGISTRO: 1 } // REGISTROS ACTIVOS
+        })
 
         if (inventory) {
             response(res, 200, 200, inventory);
@@ -35,7 +38,11 @@ export const GetInventarioxId = async (req, res) => {
 
         const { id } = req.params;
 
-        const inventory = await Inventarios.findByPk(id, { attributes: { exclude: ['createdAt', 'updatedAt'] } })
+        const inventory = await Inventarios.findByPk(id,
+            {
+                attributes: { exclude: ['createdAt', 'updatedAt'] },
+                where: { ESTADO_REGISTRO: 1 } // REGISTROS ACTIVOS
+            })
 
         if (inventory) {
             response(res, 200, 200, inventory);
@@ -51,12 +58,54 @@ export const GetInventarioxId = async (req, res) => {
 
 }
 
+export const GetInventarioxLote = async (req, res) => {
+
+    try {
+
+        const { lote } = req.params;
+
+        const loteExist = await Inventarios.findOne({ where: { LOTE: lote } })
+
+        if (!loteExist) {
+            response(res, 404, 404, "Lote not found");
+        } else {
+            const inventory = await Inventarios.findAll(
+                {
+                    attributes: { exclude: ['createdAt', 'updatedAt'] },
+                    where: { ESTADO_REGISTRO: 1, LOTE: lote }, // REGISTROS ACTIVOS
+                    include: [
+                        {
+                            model: Producto,
+                            attributes: { exclude: ['createdAt', 'updatedAt'] }
+                        }
+                    ]
+                })
+
+            if (inventory) {
+                response(res, 200, 200, inventory);
+            }
+            else {
+                response(res, 404, 404, "Inventory not found");
+            }
+
+        }
+
+
+
+
+    } catch (error) {
+        response(res, 500, 500, error);
+    }
+
+}
+
+
 export const createInventario = async (req, res) => {
     try {
 
         const INV_ID = uniqid();
 
-        const { PROD_ID_FK, PROD_CANT, INV_EST, } = req.body;
+        const { PROD_ID_FK, PROD_CANT, LOTE, FECH_REC, FECH_VENC } = req.body;
 
         const producto = await Producto.findByPk(PROD_ID_FK);
 
@@ -70,7 +119,9 @@ export const createInventario = async (req, res) => {
                 INV_ID: INV_ID,
                 PROD_ID_FK: PROD_ID_FK,
                 PROD_CANT: PROD_CANT,
-                INV_EST: INV_EST,
+                LOTE: LOTE,
+                FECH_REC: FECH_REC,
+                FECH_VENC: FECH_VENC
             }
 
             const newInventario = await Inventarios.create(data);
@@ -111,82 +162,78 @@ export const UpdateInventarios = async (req, res) => {
 
                 if (!producto) {
                     return response(res, 404, 404, "Product not found");
-                  
+
                 } else {
 
                     dataenv = {
                         PROD_ID_FK: datos.PROD_ID_FK,
                         PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
-                        INV_EST: datos.INV_EST || inventory.INV_EST
+                        INV_EST: datos.INV_EST || inventory.INV_EST,
+                        LOTE: datos.LOTE || inventory.LOTE,
+                        FECH_REC: datos.FECH_REC || inventory.FECH_REC,
+                        FECH_VENC: datos.FECH_VENC || inventory.FECH_VENC,
                     }
                 }
 
             } else {
+
                 dataenv = {
                     PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
-                    INV_EST: datos.INV_EST || inventory.INV_EST
+                    INV_EST: datos.INV_EST || inventory.INV_EST,
+                    LOTE: datos.LOTE || inventory.LOTE,
+                    FECH_REC: datos.FECH_REC || inventory.FECH_REC,
+                    FECH_VENC: datos.FECH_VENC || inventory.FECH_VENC,
                 }
             }
 
-                const responses = await Inventarios.update(dataenv, { where: { INV_ID: id } })
+            const responses = await Inventarios.update(dataenv, { where: { INV_ID: id } })
 
-                if (responses) {
-                    response(res, 200)
-                } else {
-                    response(res, 500, 500, "Error updating")
-                }
-      
+            if (responses) {
+                response(res, 200)
+            } else {
+                response(res, 500, 500, "Error updating")
+            }
+
 
         }
 
     } catch (err) {
 
-        response(res, 500, 500, "something went wrong");
+        response(res, 500, 500, err);
 
 
     }
 }
 
 
-// export const deleteInv = async (req, res) => {
-//     const { id } = req.params;
-//     try {
-//         jwt.verify(req.token, process.env.SECRETWORD, async (err, data) => {
-//             if (err) {
-//                 response(res, 401, 401, "Invalid");
-//             } else {
-//                 const permisos = adminPermissions(data.user.Id_Rol_FK);
-//                 if (permisos) {
-//                     const data = await Inventarios.findOne({
-//                         where: {
-//                             INV_ID: id
-//                         },
-//                     })
-//                     if (!data) {
-//                         response(res, 200, 200, 'eliminado correctamente')
-//                     }
-//                     const borrarInventario = Inventarios.update(
-//                         { activo: false },
-//                         {
-//                             where: {
-//                                 INV_ID: id,
-//                                 activo: true
-//                             }
-//                         }
-//                     )
-//                     if (borrarInventario) {
-//                         response(res, 200, 200, "eliminado correctamente")
-//                     }
-//                     else {
-//                         response(res, 500, 500, "error al eliminar")
-//                     }
+export const deleteInv = async (req, res) => {
+    const { id } = req.params;
+    try {
 
-//                 }
-//             }
-//         });
+        const data = await Inventarios.findByPk(id)
+        if (!data) {
+            response(res, 404, 404, 'Inventory not found')
+        } else {
 
-//     } catch (error) {
-//         console.log(error)
+            const borrarInventario = Inventarios.update(
+                { ESTADO_REGISTRO: false },
+                {
+                    where: { INV_ID: id, ESTADO_REGISTRO: true }
+                }
+            )
 
-//     }
-// }
+            if (borrarInventario) {
+                response(res, 200)
+            }
+            else {
+                response(res, 500, 500, "Error deleting")
+            }
+
+        }
+
+
+    } catch (error) {
+        response(res, 500, 500, error);
+    }
+
+}
