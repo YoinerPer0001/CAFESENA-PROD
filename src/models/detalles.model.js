@@ -1,7 +1,7 @@
 import { connection } from "../database/db.js";
 import { DataTypes } from "sequelize";
 import Producto from "./productos.models.js";
-import Encabezados from "./encabezado.model.js";
+import {Encabezados} from "./encabezado.model.js";
 
 
 const detalle = connection.define('detalle', {

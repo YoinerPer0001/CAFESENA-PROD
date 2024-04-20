@@ -91,21 +91,27 @@ insert  into `encabezados`(`ENC_ID`,`FECH_ENC`,`MET_PAGO`,`TOTAL`,`ID_USER_FK`,`
 ('erxyjd5swlv7aexs6','2024-04-19','1',12332.00,'erxyjd1aclv5t60t8','1','2024-04-19 23:14:14','2024-04-19 23:14:14'),
 ('erxyjd9gglv7a73kj','2024-04-19','1',12332.00,'erxyjd1aclv5t60t8','1','2024-04-19 23:08:09','2024-04-19 23:08:09');
 
-/*Table structure for table `factura` */
+/*Table structure for table `facturas` */
 
-DROP TABLE IF EXISTS `factura`;
+DROP TABLE IF EXISTS `facturas`;
 
-CREATE TABLE `factura` (
+CREATE TABLE `facturas` (
   `FACT_ID` varchar(100) NOT NULL,
-  `ENC_ID_FK` varchar(100) NOT NULL,
-  `TOTAL_COM` int(11) NOT NULL,
   `FACT_FECH` date NOT NULL,
+  `ID_EMPLEADO` varchar(100) DEFAULT NULL,
+  `createdAt` datetime DEFAULT NULL,
+  `updatedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`FACT_ID`),
-  KEY `id_VentaFK` (`ENC_ID_FK`),
-  CONSTRAINT `factura_ibfk_3` FOREIGN KEY (`ENC_ID_FK`) REFERENCES `encabezados` (`ENC_ID`)
+  KEY `ID_EMPLEADO` (`ID_EMPLEADO`),
+  CONSTRAINT `facturas_ibfk_4` FOREIGN KEY (`ID_EMPLEADO`) REFERENCES `usuarios` (`Id_User`),
+  CONSTRAINT `facturas_ibfk_5` FOREIGN KEY (`FACT_ID`) REFERENCES `encabezados` (`ENC_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `factura` */
+/*Data for the table `facturas` */
+
+insert  into `facturas`(`FACT_ID`,`FACT_FECH`,`ID_EMPLEADO`,`createdAt`,`updatedAt`) values 
+('1','2024-04-25','erxyjd1aclv5t60t8','2024-04-19 20:26:25','2024-04-20 04:13:47'),
+('erxyjd5swlv7aexs6','2024-04-20','hle1ffcmolul8uo6n','2024-04-20 03:42:54','2024-04-20 03:42:54');
 
 /*Table structure for table `inventarios` */
 

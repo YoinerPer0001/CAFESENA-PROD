@@ -4,7 +4,7 @@ import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
 import Producto from "../models/productos.models.js";
 import Proveedor from "../models/proveedor.models.js";
-import Encabezados from "../models/encabezado.model.js";
+import {Encabezados} from "../models/encabezado.model.js";
 import detalle from "../models/detalles.model.js";
 
 

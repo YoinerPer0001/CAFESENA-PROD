@@ -31,6 +31,4 @@ export const Encabezados = connection.define('Encabezados', {
 });
 
 
-export default Encabezados;
-
 

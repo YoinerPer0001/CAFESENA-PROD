@@ -1,13 +1,10 @@
 import jsonwebtoken from "jsonwebtoken"
-import { adminPermissions } from "../utils/manage.permissions.js";
 import 'dotenv/config'
 import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
 import { Encabezados } from "../models/encabezado.model.js";
-import detalle_compra from "../models/detalles.model.js";
 import Usuario from "../models/users.model.js";
-import Producto from "../models/productos.models.js";
-import detalle from "../models/detalles.model.js";
+
 
 
 const jwt = jsonwebtoken;
