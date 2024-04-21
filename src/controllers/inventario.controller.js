@@ -1,4 +1,4 @@
-import jsonwebtoken from "jsonwebtoken";
+
 import 'dotenv/config';
 import { adminPermissions, EmplPermissions } from "../utils/manage.permissions.js";
 import { response } from "../utils/responses.js";
@@ -6,7 +6,7 @@ import Inventarios from "../models/inventarios.model.js";
 import uniqid from 'uniqid';
 import Producto from "../models/productos.models.js";
 
-const jwt = jsonwebtoken;
+
 
 //get all inventario
 export const GetInventarios = async (req, res) => {

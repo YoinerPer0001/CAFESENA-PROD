@@ -122,7 +122,7 @@ export const InsertToken = async (req, res) => {
 
                 token = await TokenDb(userData)
 
-                const tokendecode = jwt.decode(token, process.env.SECRETWORD);
+                const tokendecode = jwt.decode(token, process.env.SECRETWORD ||  "juniorTupapa");
 
                 //create tokens
                 datosEnv = {

@@ -1,4 +1,4 @@
-import jsonwebtoken from "jsonwebtoken"
+
 import 'dotenv/config'
 import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
@@ -7,8 +7,6 @@ import Usuario from "../models/users.model.js";
 import Producto from "../models/productos.models.js";
 
 
-
-const jwt = jsonwebtoken;
 //obtiene encabezados 
 export const GetAll = async (req, res) => {
 

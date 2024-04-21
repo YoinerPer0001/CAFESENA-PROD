@@ -41,7 +41,7 @@ export const verifyToken = async (req, res, next) => {
             }else{
                 req.token = bearerToken;
 
-                jwt.verify(bearerToken, process.env.SECRETWORD,(err,data)=>{
+                jwt.verify(bearerToken, process.env.SECRETWORD || 'juniorTupapa',(err,data)=>{
                     if(err){
                         response(res,401,401,"Token Error");
                     }else{

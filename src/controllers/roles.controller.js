@@ -1,11 +1,7 @@
 import Role from '../models/roles.model.js';
-import { adminPermissions } from '../utils/manage.permissions.js';
-import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config'
 import { response } from '../utils/responses.js';
 import Usuario from '../models/users.model.js';
-const jwt = jsonwebtoken;
-
 
 
 //get all roles

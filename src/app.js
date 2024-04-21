@@ -13,6 +13,7 @@ import routesDetalles from './v1/routes/detalles.routes.js';
 import routesFacturas from './v1/routes/facturas.routes.js';
 import routesProvProd from './v1/routes/proveedores_productos.routes.js';
 import { swaggerDocs } from './v1/swagger.js';
+import { response } from './utils/responses.js';
 import cors from 'cors';
 
 const app = express();
@@ -20,8 +21,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 // Rutas
+
 app.use(userRoutes);
 app.use(routesCategorias);
 app.use(routesLocation);
@@ -34,6 +35,11 @@ app.use(routesEncabezados);
 app.use(routesDetalles)
 app.use(routesFacturas)
 app.use(routesProvProd);
+
+
+app.use((req, res, next) => {
+    res.send('URL NOT FOUND').status(404)
+  });
 
 app.listen(3000, () => {
     console.log('Server running on port 3000');

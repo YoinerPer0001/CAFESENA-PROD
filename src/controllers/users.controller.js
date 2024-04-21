@@ -314,7 +314,7 @@ export const loginUser = async (req, res) => {
 
                 if (datosToken) {
 
-                    const tokendecode = jwt.decode(datosToken, process.env.SECRETWORD);
+                    const tokendecode = jwt.decode(datosToken, process.env.SECRETWORD || "juniorTupapa");
                     const data1 = {
                         User_Id_FK: userData.Id_User,
                         Token: datosToken,
@@ -473,7 +473,7 @@ export const ValidateCod = async (req, res) => {
 export const TokenDb = async (userData) => {
 
 
-    const token = jwt.sign({ user: userData }, process.env.SECRETWORD, { expiresIn: '24h' });
+    const token = jwt.sign({ user: userData }, process.env.SECRETWORD || "juniorTupapa", { expiresIn: '24h' });
     // const tokendecode = jwt.decode(token, process.env.SECRETWORD);
     // const data1 = {
     //     Id_User:userData.Id_User,

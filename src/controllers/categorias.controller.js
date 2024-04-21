@@ -1,4 +1,3 @@
-import jsonwebtoken from "jsonwebtoken"
 import { adminPermissions } from "../utils/manage.permissions.js";
 import Categorias from "../models/categorias.model.js";
 import 'dotenv/config'
@@ -6,8 +5,6 @@ import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
 import Producto from "../models/productos.models.js";
 
-
-const jwt = jsonwebtoken;
 
 //get all categories actives
 export const GetCategories = async (req, res) => {
@@ -57,7 +54,6 @@ export const GetCategoriesxId = async (req, res) => {
 // create categories
 export const createCategories = async (req, res) => {
     try {
-        const data = req.Tokendata;
         const Id_Cat = uniqid();
 
         const { Nom_Cat } = req.body;

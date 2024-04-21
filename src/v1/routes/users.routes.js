@@ -6,6 +6,7 @@ import {validateCreate , validateUpdate, validateLogin, validateEmail, validateC
 
 const userRoutes = express();
 
+
 userRoutes.get('/api/v1/users', verifyToken, adminPermiso, getUsers);
 
 //get user by id ---ok ---

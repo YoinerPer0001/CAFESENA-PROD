@@ -1,4 +1,4 @@
-import jsonwebtoken from "jsonwebtoken"
+
 import 'dotenv/config'
 import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
@@ -7,8 +7,6 @@ import Proveedor from "../models/proveedor.models.js";
 import { Encabezados } from "../models/encabezado.model.js";
 import detalle from "../models/detalles.model.js";
 
-
-const jwt = jsonwebtoken;
 
 //get all det
 export const GetDet = async (req, res) => {

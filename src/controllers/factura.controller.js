@@ -1,4 +1,4 @@
-import jsonwebtoken from "jsonwebtoken"
+
 import 'dotenv/config'
 import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";

@@ -1,12 +1,10 @@
-import jsonwebtoken from "jsonwebtoken";
+
 import { adminPermissions, EmplPermissions } from "../utils/manage.permissions.js";
 import 'dotenv/config'
 import { response } from "../utils/responses.js";
 import Proveedor from "../models/proveedor.models.js"
 import uniqid from 'uniqid';
 
-
-const jwt = jsonwebtoken
 
 //get all providers
 export const getProveedor = async (req, res) => {

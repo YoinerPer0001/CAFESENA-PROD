@@ -1,12 +1,8 @@
-
-import { adminPermissions } from '../utils/manage.permissions.js';
-import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config'
 import { response } from '../utils/responses.js';
 import Localizacion from '../models/localizacion.model.js';
 import Usuario from '../models/users.model.js';
 
-const jwt = jsonwebtoken;
 
 
 
@@ -15,9 +11,9 @@ export const GetLocations = async (req, res) => {
 
     try {
         const locations = await Localizacion.findAll({
-             attributes: { exclude: ['createdAt', 'updatedAt','ESTADO_REGISTRO'] },
-             where: {ESTADO_REGISTRO: 1}
-             });
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+            where: { ESTADO_REGISTRO: 1 }
+        });
 
         if (locations) {
             response(res, 200, 200, locations);
@@ -49,8 +45,9 @@ export const GetLocationsxUser = async (req, res) => {
         } else {
 
             const locations = await Localizacion.findOne(
-                { where: { Id_User_FK: id, ESTADO_REGISTRO: 1 },
-                 attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] } 
+                {
+                    where: { Id_User_FK: id, ESTADO_REGISTRO: 1 },
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
                 });
 
             if (locations) {
@@ -131,7 +128,7 @@ export const UpdateLocations = async (req, res) => {
             response(res, 404, 404, "location don't found");
 
         } else {
-            
+
             location = location.dataValues;
             //user verify exist
             if (datos.Id_User) {
@@ -183,31 +180,31 @@ export const UpdateLocations = async (req, res) => {
 
     } catch (err) {
 
-        response(res, 500, 500,err);
+        response(res, 500, 500, err);
 
     }
 
 }
 
-export const deleteLoc = async (req, res, ) => {
+export const deleteLoc = async (req, res,) => {
     try {
         const { id } = req.params;
         const location = await Localizacion.findByPk(id)
         if (!location) {
             response(res, 404, 404, 'location not found');
         } else {
-            
-            const deleted = await Localizacion.update({ESTADO_REGISTRO: 0}, {where: {Id_Loc: id}})
 
-            if(deleted){
+            const deleted = await Localizacion.update({ ESTADO_REGISTRO: 0 }, { where: { Id_Loc: id } })
+
+            if (deleted) {
                 response(res, 200, 200);
-            }else{
+            } else {
                 response(res, 500, 500, 'Error Deleting');
             }
         }
-        
+
     } catch (err) {
         response(res, 500, 500, err);
     }
-    
+
 }
