@@ -41,7 +41,9 @@ app.use((req, res, next) => {
     res.send('URL NOT FOUND').status(404)
   });
 
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
-    swaggerDocs(app, 3000);
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    swaggerDocs(app, PORT); // Pasa el puerto como argumento a la función swaggerDocs
 });
