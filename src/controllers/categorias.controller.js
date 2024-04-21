@@ -67,7 +67,7 @@ export const createCategories = async (req, res) => {
 
         if (categoriaExists) {
 
-            response(res, 409, 409, "category already exist");
+           return response(res, 409, 409, "category already exist");
 
         } else {
 
@@ -121,7 +121,7 @@ export const UpdateCategories = async (req, res) => {
             }
 
             if (categoriaExists) {
-                response(res, 409, 409, "New category already registered");
+                return response(res, 409, 409, "New category already registered");
             } else {
 
                 const datosEnv = {

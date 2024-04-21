@@ -65,7 +65,7 @@ export const createRoles = async (req, res) => {
 
         if (rolExists) {
 
-            response(res, 409, 409, "rol already exist");
+           return response(res, 409, 409, "rol already exist");
 
         } else {
 

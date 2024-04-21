@@ -111,7 +111,7 @@ export const createProvProd = async (req, res) => {
                 }
             })
             if (asignacionExist) {
-                response(res, 404, 404, "Already assigned")
+                return response(res, 404, 404, "Already assigned")
             } else {
                 const data = await proveedor_producto.create({
                     Id_Prov_Prod: Id_Prov_Prod,

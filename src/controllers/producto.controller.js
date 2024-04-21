@@ -87,9 +87,9 @@ export const createProducts = async (req, res) => {
         if (productsExis || !catExist) {
 
             if (productsExis) {
-                response(res, 409, 409, "products already exist");
+                return response(res, 409, 409, "products already exist");
             } else {
-                response(res, 404, 404, "category don't exist");
+                return response(res, 404, 404, "category don't exist");
             }
 
         } else {
