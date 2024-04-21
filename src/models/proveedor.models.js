@@ -3,7 +3,7 @@ import { Sequelize, DataTypes } from "sequelize";
 
 
 
-const Proveedor = connection.define('Proveedor', {
+const Proveedor = connection.define('proveedor', {
    
     PROV_ID: {
       type: DataTypes.STRING,

@@ -2,7 +2,7 @@ import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
 
 
-const Producto = connection.define('Producto', {
+const Producto = connection.define('producto', {
    
     PROD_ID: {
       type: DataTypes.INTEGER,

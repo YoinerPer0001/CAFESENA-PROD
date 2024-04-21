@@ -1,7 +1,7 @@
 import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
 
-const Token = connection.define('Token', {
+const Token = connection.define('token', {
    
     Id_Token: {
       type: DataTypes.INTEGER,

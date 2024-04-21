@@ -5,7 +5,7 @@ import Localizacion from "./localizacion.model.js";
 import { Encabezados } from "./encabezado.model.js";
 
 
-const Usuario = connection.define('Usuario', {
+const Usuario = connection.define('usuario', {
    
     Id_User: {
       type: DataTypes.UUIDV4,

@@ -2,7 +2,7 @@ import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
 
 
-export const Encabezados = connection.define('Encabezados', {
+export const Encabezados = connection.define('encabezados', {
     ENC_ID: {
         type: DataTypes.STRING,
         allowNull: false,

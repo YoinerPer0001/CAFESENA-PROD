@@ -2,7 +2,7 @@
   import { Sequelize, DataTypes } from "sequelize";
   
   
-  const Localizacion = connection.define('Localizacion', {
+  const Localizacion = connection.define('localizacion', {
      
     Id_Loc: {
         type: DataTypes.INTEGER,

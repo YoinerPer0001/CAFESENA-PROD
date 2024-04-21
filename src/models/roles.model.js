@@ -3,7 +3,7 @@ import { Sequelize, DataTypes } from "sequelize";
 import Usuario from "./users.model.js";
 
 
-const Role = connection.define('Role', {
+const Role = connection.define('role', {
    
     Id_Rol: {
       type: DataTypes.INTEGER,

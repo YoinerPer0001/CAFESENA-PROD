@@ -3,7 +3,7 @@ import { Sequelize, DataTypes } from "sequelize";
 import Producto from "./productos.models.js";
 
 
-const Categorias = connection.define('Categorias', {
+const Categorias = connection.define('categorias', {
    
     Id_Cat: {
       type: DataTypes.INTEGER,
