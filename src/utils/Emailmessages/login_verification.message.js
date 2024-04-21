@@ -3,7 +3,7 @@ import { transporter } from "../Email.connection.js";
 export const mensaje_Confirm_Login = async (email, nombre, codigo) => {
 
     const info = await transporter.sendMail({
-        from: '"Verificacion de inicio de sesión SenaLearn" <senalearns@gmail.com>', // sender address
+        from: '"Verificacion de inicio de sesión CafeSENA" <senalearns@gmail.com>', // sender address
         to: `${email}`, // list of receivers
         subject: `Hello ${nombre} ✔`, // Subject line
         text: "correo enviado desde node js", // plain text body

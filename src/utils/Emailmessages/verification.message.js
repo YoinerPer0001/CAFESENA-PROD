@@ -2,7 +2,7 @@ import { transporter } from "../Email.connection.js";
 export const mensajeEnviar = async (email, nombre, codigo, pass) => {
 
     const info = await transporter.sendMail({
-        from: '"Verificacion de email SenaLearn" <senalearns@gmail.com>', // sender address
+        from: '"Verificacion de email CafeSENA" <senalearns@gmail.com>', // sender address
         to: `${email}`, // list of receivers
         subject: `Hello ${nombre} ✔`, // Subject line
         text: "correo enviado desde node js", // plain text body
@@ -29,7 +29,7 @@ export const mensajeEnviar = async (email, nombre, codigo, pass) => {
          
         <p>Asegúrate de mantener segura tu contraseña y no compartirla con nadie. Si olvidas tu contraseña en el futuro, puedes utilizar la opción "Olvidé mi contraseña" en la página de inicio de sesión para restablecerla.</p>
     
-        <p>¡Gracias por unirte a SenaLearn! Esperamos que disfrutes de tu experiencia en nuestra plataforma.
+        <p>¡Gracias por unirte a CafeSENA! Esperamos que disfrutes de tu experiencia en nuestra plataforma.
     
           Atentamente,
           
