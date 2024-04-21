@@ -7,7 +7,7 @@ export const connection = new Sequelize(process.env.DBNAME || 'cafeteriadb', pro
     dialect: 'mysql',
     port: process.env.DBPORT || 3306
 });
-console.log(process.env.DBNAME,process.env.USERNA, process.env.PASS,process.env.DBHOST );
+
 
 async function authenticateConnection() {
   try {
