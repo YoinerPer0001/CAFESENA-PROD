@@ -4,7 +4,8 @@ import 'dotenv/config'
 // Option 3: Passing parameters separately (other dialects)
 export const connection = new Sequelize(process.env.DBNAME || 'cafeteriadb', process.env.USERNA || 'root', process.env.PASS || '', {
     host: process.env.DBHOST || 'localhost',
-    dialect: 'mysql'
+    dialect: 'mysql',
+    port: process.env.DBPORT || 3306
 });
 console.log(process.env.DBNAME,process.env.USERNA, process.env.PASS,process.env.DBHOST );
 
