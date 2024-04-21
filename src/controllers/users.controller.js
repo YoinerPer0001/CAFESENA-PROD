@@ -441,14 +441,14 @@ export const ValidateCod = async (req, res) => {
                 }
 
             } else {
-                response(res, 400, 105, "Something went wrong");
+                response(res, 404, 404, 'Token not valido');
             }
 
 
 
         } else {
 
-            response(res, 400, 103, "Something went wrong");
+            response(res, 404, 404, "Token not found");
         }
 
 
