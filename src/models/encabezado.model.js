@@ -27,6 +27,11 @@ export const Encabezados = connection.define('Encabezados', {
     TIPO_ENCABE: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    ESTADO_REGISTRO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
     }
 });
 

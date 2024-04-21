@@ -14,7 +14,10 @@ const jwt = jsonwebtoken;
 export const GetLocations = async (req, res) => {
 
     try {
-        const locations = await Localizacion.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } });
+        const locations = await Localizacion.findAll({
+             attributes: { exclude: ['createdAt', 'updatedAt','ESTADO_REGISTRO'] },
+             where: {ESTADO_REGISTRO: 1}
+             });
 
         if (locations) {
             response(res, 200, 200, locations);
@@ -45,7 +48,10 @@ export const GetLocationsxUser = async (req, res) => {
 
         } else {
 
-            const locations = await Localizacion.findOne({ where: { Id_User_FK: id }, attributes: { exclude: ['createdAt', 'updatedAt'] } });
+            const locations = await Localizacion.findOne(
+                { where: { Id_User_FK: id, ESTADO_REGISTRO: 1 },
+                 attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] } 
+                });
 
             if (locations) {
                 response(res, 200, 200, locations);
@@ -141,7 +147,8 @@ export const UpdateLocations = async (req, res) => {
                     datosEnv = {
 
                         Dir_Ip: datos.Dir_Ip || location.Dir_Ip,
-                        Id_User_FK: datos.Id_User
+                        Id_User_FK: datos.Id_User,
+                        ESTADO_REGISTRO: datos.ESTADO_REGISTRO || location.ESTADO_REGISTRO
                     }
 
                     const responses = await Localizacion.update(datosEnv, { where: { Id_Loc: id } })
@@ -158,7 +165,8 @@ export const UpdateLocations = async (req, res) => {
                 datosEnv = {
 
                     Dir_Ip: datos.Dir_Ip || location.Dir_Ip,
-                    Id_User_FK: datos.Id_User || location.Id_User_FK
+                    Id_User_FK: datos.Id_User || location.Id_User_FK,
+                    ESTADO_REGISTRO: datos.ESTADO_REGISTRO || location.ESTADO_REGISTRO
                 }
 
                 const responses = await Localizacion.update(datosEnv, { where: { Id_Loc: id } })
@@ -179,4 +187,27 @@ export const UpdateLocations = async (req, res) => {
 
     }
 
+}
+
+export const deleteLoc = async (req, res, ) => {
+    try {
+        const { id } = req.params;
+        const location = await Localizacion.findByPk(id)
+        if (!location) {
+            response(res, 404, 404, 'location not found');
+        } else {
+            
+            const deleted = await Localizacion.update({ESTADO_REGISTRO: 0}, {where: {Id_Loc: id}})
+
+            if(deleted){
+                response(res, 200, 200);
+            }else{
+                response(res, 500, 500, 'Error Deleting');
+            }
+        }
+        
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+    
 }

@@ -178,6 +178,7 @@ export const UpdateInventarios = async (req, res) => {
                         LOTE: datos.LOTE || inventory.LOTE,
                         FECH_REC: datos.FECH_REC || inventory.FECH_REC,
                         FECH_VENC: datos.FECH_VENC || inventory.FECH_VENC,
+                        ESTADO_REGISTRO: datos.ESTADO_REGISTRO || inventory.ESTADO_REGISTRO
                     }
                 }
 
@@ -189,6 +190,7 @@ export const UpdateInventarios = async (req, res) => {
                     LOTE: datos.LOTE || inventory.LOTE,
                     FECH_REC: datos.FECH_REC || inventory.FECH_REC,
                     FECH_VENC: datos.FECH_VENC || inventory.FECH_VENC,
+                    ESTADO_REGISTRO: datos.ESTADO_REGISTRO || inventory.ESTADO_REGISTRO
                 }
             }
 

@@ -8,12 +8,13 @@ import factura from "../models/factura.model.js";
 import detalle from "../models/detalles.model.js";
 import Producto from "../models/productos.models.js";
 
-let atrExclude = { exclude: ['createdAt', 'updatedAt', 'Pass_User', 'Est_Email_User'] };
+let atrExclude = { exclude: ['createdAt', 'updatedAt', 'Pass_User', 'Est_Email_User', 'ESTADO_REGISTRO'] };
 
 export const getFacturas = async (req, res) => {
     try {
         const fact = await factura.findAll({
             attributes: atrExclude,
+            where: {ESTADO_REGISTRO: 1}
             // include:[
             //     {
             //         model:Usuario, as: 'Empleado',
@@ -136,7 +137,7 @@ export const createFactura = async (req, res) => {
   
         const encab = await Encabezados.findByPk(Id_Enc);
 
-        const fact = await factura.findByPk(Id_Enc)
+        const fact = await factura.findOne({where:{FACT_ID: Id_Enc, ESTADO_REGISTRO: 1}})
 
         if (!encab || fact) {
 
@@ -192,7 +193,8 @@ export const updateFactura = async (req, res) => {
             }
              datosEnv ={
                 ID_EMPLEADO: datos.ID_EMPLEADO || fact.ID_EMPLEADO,
-                FACT_FECH: datos.FACT_FECH || fact.FACT_FECH
+                FACT_FECH: datos.FACT_FECH || fact.FACT_FECH,
+                ESTADO_REGISTRO: datos.ESTADO_REGISTRO || fact.ESTADO_REGISTRO
             }
 
             const updated = await factura.update(datosEnv, {where:{FACT_ID: id}})
@@ -206,6 +208,29 @@ export const updateFactura = async (req, res) => {
     }catch (err) {
         response(res, 500, 500, err);
     }
+}
+
+export const deleteFact = async (req, res, ) => {
+    try {
+        const { id } = req.params;
+        const fact = await factura.findByPk(id)
+        if (!fact) {
+            return response(res, 404, 404, 'invoise not found');
+        } else {
+            
+            const deleted = await factura.update({ESTADO_REGISTRO: 0}, {where: {FACT_ID: id}})
+
+            if(deleted){
+                response(res, 200);
+            }else{
+                response(res, 500, 500, 'Error Deleting');
+            }
+        }
+        
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+    
 }
 
 

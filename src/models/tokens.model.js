@@ -26,7 +26,12 @@ const Token = connection.define('Token', {
         type: DataTypes.CHAR,
         allowNull: false,
         defaultValue:'1'
-    }
+    },
+    ESTADO_REGISTRO: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+  }
   });
   
 

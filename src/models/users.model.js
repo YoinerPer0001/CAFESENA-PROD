@@ -51,6 +51,11 @@ const Usuario = connection.define('Usuario', {
         allowNull: false,
         defaultValue:0
     },
+    ESTADO_REGISTRO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
+    }
     // Other model options go here
   });
 

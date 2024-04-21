@@ -3,6 +3,7 @@ import { adminPermissions } from '../utils/manage.permissions.js';
 import jsonwebtoken from 'jsonwebtoken'
 import 'dotenv/config'
 import { response } from '../utils/responses.js';
+import Usuario from '../models/users.model.js';
 const jwt = jsonwebtoken;
 
 
@@ -11,7 +12,10 @@ const jwt = jsonwebtoken;
 export const GetRoles = async (req, res) => {
 
     try {
-        const roles = await Role.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } });
+        const roles = await Role.findAll({
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+            where: { ESTADO_REGISTRO: 1 } // REGISTROS ACTIVOS
+        });
 
         if (roles) {
             response(res, 200, 200, roles);
@@ -33,7 +37,7 @@ export const GetRolesxId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const roles = await Role.findByPk(id);
+        const roles = await Role.findByPk(id, { attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }, });
 
         if (roles) {
             response(res, 200, 200, roles);
@@ -56,7 +60,7 @@ export const createRoles = async (req, res) => {
         const { Nom_Rol } = req.body;
 
         //verificamos que no exista un rol con el mismo nombre
-        const rolExists = await Role.findOne({ where: { Nom_Rol: Nom_Rol } })
+        const rolExists = await Role.findOne({ where: { Nom_Rol: Nom_Rol, ESTADO_REGISTRO: 1 } })
 
 
         if (rolExists) {
@@ -102,11 +106,28 @@ export const UpdateRoles = async (req, res) => {
         } else {
             roles = roles.dataValues;
 
-            datosEnv = {
+            if (datos.Nom_Rol) {
+                const rolExists = await Role.findOne({ where: { Nom_Rol: datos.Nom_Rol, ESTADO_REGISTRO: 1 } })
 
-                Nom_Rol: datos.Nom_Rol || roles.Nom_Rol
+                if (rolExists) {
+
+                    return response(res, 409, 409, "New rol already exist");
+                } else {
+                    datosEnv = {
+
+                        Nom_Rol: datos.Nom_Rol,
+                        ESTADO_REGISTRO: datos.ESTADO_REGISTRO || roles.ESTADO_REGISTRO
+                    }
+
+                }
+            } else {
+                datosEnv = {
+
+                    Nom_Rol: datos.Nom_Rol || roles.Nom_Rol,
+                    ESTADO_REGISTRO: datos.ESTADO_REGISTRO || roles.ESTADO_REGISTRO
+                }
+
             }
-
 
             const responses = await Role.update(datosEnv, { where: { Id_Rol: id } })
             if (responses) {
@@ -122,4 +143,34 @@ export const UpdateRoles = async (req, res) => {
 
     }
 
+}
+
+export const deleteRol = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const rol = await Role.findByPk(id);
+        if (!rol) {
+            return response(res, 404, 404, "Rol don't exist");
+
+        } else {
+
+            const responses = await Role.update({ ESTADO_REGISTRO: 0 }, { where: { Id_Rol: id } })
+            if (responses) {
+
+                const changeRolUser = await Usuario.update({Id_Rol_FK: 4},{where: {Id_Rol_FK: id}})
+                if (changeRolUser) {
+                    response(res, 200)
+                } else {
+                    response(res, 500, 500, "Error Deleting")
+                }
+            } else {
+                response(res, 500, 500, "Error Deleting")
+            }
+
+        }
+
+    } catch (err) {
+
+        response(res, 500, 500, err);
+    }
 }

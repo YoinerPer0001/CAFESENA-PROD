@@ -20,7 +20,10 @@ export const getUsers = async (req, res) => {
 
     try {
 
-        const users = await Usuario.findAll({ attributes: { exclude: ['Pass_User', 'createdAt', 'updatedAt'] } });
+        const users = await Usuario.findAll(
+            { attributes: { exclude: ['Pass_User', 'createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+            where:{ESTADO_REGISTRO: 1}
+         });
         if (users) {
             response(res, 200, 200, users);
         } else {
@@ -68,7 +71,7 @@ export const regUser = async (req, res) => {
 
 
         //verificamos que no exista EMAIL/TEL
-        const user = await Usuario.findOne({ where: { Ema_User: datos.Ema_User } });
+        const user = await Usuario.findOne({ where: { Ema_User: datos.Ema_User, ESTADO_REGISTRO: 1 } });
 
         if (user == null) {
 
@@ -130,7 +133,7 @@ export const regUser = async (req, res) => {
 
 
         } else {
-            response(res, 400, 107, "Email is registered");
+            response(res, 409, 409, "Email is registered");
         }
 
     } catch (err) {
@@ -171,7 +174,8 @@ export const UpdateUserData = async (req, res) => {
                 Ape_User: UserData.Ape_User || actualData.Ape_User,
                 Tel_User: UserData.Tel_User || actualData.Tel_User,
                 Ema_User: NewEmail || actualData.Ema_User,
-                Fot_User: UserData.Fot_User || actualData.Tel_User
+                Fot_User: UserData.Fot_User || actualData.Tel_User,
+                ESTADO_REGISTRO: UserData.ESTADO_REGISTRO || actualData.ESTADO_REGISTRO
             }
 
             //update data
@@ -271,7 +275,7 @@ export const loginUser = async (req, res) => {
     const { Ema_User, Pass_User, Dir_Ip } = req.body;
 
 
-    let user = await Usuario.findOne({ where: { Ema_User: Ema_User } });
+    let user = await Usuario.findOne({ where: { Ema_User: Ema_User, ESTADO_REGISTRO: 1 } });
 
 
     if (user) {
@@ -479,6 +483,29 @@ export const TokenDb = async (userData) => {
 
     return token;
 
+}
+
+export const deleteUser = async (req, res, ) => {
+    try {
+        const { id } = req.params;
+        const user = await Usuario.findByPk(id)
+        if (!user) {
+            response(res, 404, 404, 'user not found');
+        } else {
+            
+            const deleted = await Usuario.update({ESTADO_REGISTRO: 0}, {where: {Id_User: id}})
+
+            if(deleted){
+                response(res, 200, 200);
+            }else{
+                response(res, 500, 500, 'Error Deleting');
+            }
+        }
+        
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+    
 }
 
 

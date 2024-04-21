@@ -4,6 +4,7 @@ import Categorias from "../models/categorias.model.js";
 import 'dotenv/config'
 import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
+import Producto from "../models/productos.models.js";
 
 
 const jwt = jsonwebtoken;
@@ -13,7 +14,8 @@ export const GetCategories = async (req, res) => {
 
     try {
         const datos_activos = await Categorias.findAll({
-            where: {activo: true}, attributes: {exclude:['createdAt','updatedAt']}
+            where: { ESTADO_REGISTRO: 1 },//REGISTROS NO ELIMINADOS
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
         })
         if (datos_activos) {
             response(res, 200, 200, datos_activos);
@@ -33,7 +35,11 @@ export const GetCategoriesxId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const categoria = await Categorias.findByPk(id, { attributes: {exclude:['createdAt','updatedAt']}})
+        const categoria = await Categorias.findByPk(id,
+            {
+                attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+                where: { ESTADO_REGISTRO: 1 },//REGISTROS NO ELIMINADOS
+            })
 
         if (categoria) {
             response(res, 200, 200, categoria);
@@ -57,7 +63,7 @@ export const createCategories = async (req, res) => {
         const { Nom_Cat } = req.body;
 
         //verificamos que no exista una categoria con el mismo nombre
-        const categoriaExists = await Categorias.findOne({ where: { Nom_Cat: Nom_Cat } })
+        const categoriaExists = await Categorias.findOne({ where: { Nom_Cat: Nom_Cat, ESTADO_REGISTRO: 1 } })
 
         if (categoriaExists) {
 
@@ -96,32 +102,36 @@ export const UpdateCategories = async (req, res) => {
 
         const datos = req.body;
 
+        let categoriaExists = null;
+
         //verify exist category
 
         let category = await Categorias.findByPk(id)
-        
+
         if (!category) {
 
             response(res, 404, 404, "Category don't exist");
 
         } else {
             category = category.dataValues;
-            
+
             //verificamos que no exista una categoria con el mismo nombre
-            
-            const categoriaExists = await Categorias.findOne({ where: { Nom_Cat: datos.Nom_Cat.toLowerCase() } })
-           
+            if (datos.Nom_Cat) {
+                categoriaExists = await Categorias.findOne({ where: { Nom_Cat: datos.Nom_Cat.toLowerCase() } })
+            }
+
             if (categoriaExists) {
                 response(res, 409, 409, "New category already registered");
             } else {
-                
+
                 const datosEnv = {
 
-                    Nom_Cat: datos.Nom_Cat || category.Nom_Cat
-                
+                    Nom_Cat: datos.Nom_Cat || category.Nom_Cat,
+                    ESTADO_REGISTRO: datos.ESTADO_REGISTRO || category.ESTADO_REGISTRO
+
                 }
-                console.log(datos)
-                
+                console.log(datos.ESTADO_REGISTRO)
+
                 const responses = await Categorias.update(datosEnv, { where: { Id_Cat: id } })
 
                 if (responses) {
@@ -142,5 +152,37 @@ export const UpdateCategories = async (req, res) => {
 }
 
 export const deleteCat = async (req, res) => {
- 
+    try {
+        const { id } = req.params;
+        const data = await Categorias.findByPk(id)
+        if (!data) {
+            response(res, 404, 404, 'Category not found')
+        } else {
+            const borrarCategoria = Categorias.update(
+                { ESTADO_REGISTRO: false },
+                {
+                    where: { Id_Cat: id }
+                }
+            )
+            if (borrarCategoria) {
+                const updateProdAsc = await Producto.update(
+                    { CAT_ID_FK: 14 },//cambiamos la relacion a la categoria "sin categoria" para que los datos permanezcan
+                    { where: { CAT_ID_FK: id } }
+                )
+
+                if(updateProdAsc){
+                    response(res, 200)
+
+                }else{
+                    response(res, 500, 500, 'Error deleting category')
+                }
+            } else {
+                response(res, 500, 500, 'Error deleting category')
+            }
+        }
+
+
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
 }

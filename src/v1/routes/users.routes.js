@@ -1,5 +1,5 @@
 import express from "express";
-import {getUsers, loginUser, regUser,ValidateEmail, ValidateCod, UpdateUserData, getUserxId} from "../../controllers/users.controller.js"
+import {getUsers, loginUser, regUser,ValidateEmail, ValidateCod, UpdateUserData, getUserxId, deleteUser} from "../../controllers/users.controller.js"
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { adminPermiso } from "../../middlewares/managePermissions.js";
 import {validateCreate , validateUpdate, validateLogin, validateEmail, validateCodIp} from "../../validators/users.validators.js";
@@ -34,6 +34,11 @@ userRoutes.post('/api/v1/ip_validation',validateCodIp, ValidateCod);
 
 
 userRoutes.put('/api/v1/users/update/:id',validateUpdate,verifyToken, adminPermiso, UpdateUserData)
+
+//delete user
+
+
+userRoutes.delete('/api/v1/users/delete/:id',verifyToken, adminPermiso, deleteUser)
 
 
 

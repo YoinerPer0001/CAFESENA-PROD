@@ -20,7 +20,8 @@ export const validateUpdate = [
     check('PROD_DESC').optional().isString().withMessage('PROD_DESC must be a string'),
     check('PROD_PREC').optional().isDecimal().withMessage('PROD_PREC must be a decimal number'),
     check('CAT_ID_FK').optional().isNumeric().withMessage('CAT_ID_FK must be a numeric value'),
-
+    check('ESTADO_REGISTRO').optional().isString().withMessage('PROD_DESC must be a string')
+    .isLength({max:1}).withMessage('PROD_DESC must be 1 character long'),
     (req, res, next) => {
         validateResult(req, res, next);
     }

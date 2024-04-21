@@ -16,10 +16,10 @@ const Categorias = connection.define('Categorias', {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    activo:{
-      type: DataTypes.BOOLEAN,
+    ESTADO_REGISTRO:{
+      type: DataTypes.INTEGER,
       allowNull: false,
-      defaultValue: true
+      defaultValue: 1
     }
   });
 

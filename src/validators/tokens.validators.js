@@ -13,6 +13,8 @@ export const validateCreate = [
 export const validateUpdate = [
     check("Id_User").optional().isString().withMessage("User_Id_FK must not be a string"),
     check("Tipo_token").optional().isString().withMessage("Tipo_token must not be a string"),
+    check('ESTADO_REGISTRO').optional().isString().withMessage('PROD_DESC must be a string')
+    .isLength({max:1}).withMessage('PROD_DESC must be 1 character long'),
     
     (req, res, next) => {
         validateResult(req, res, next);

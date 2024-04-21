@@ -1,4 +1,4 @@
-import {check} from "express-validator";
+import { check } from "express-validator";
 import { validateResult } from "../utils/validators.utils.js";
 
 export const validateCreate = [
@@ -13,7 +13,9 @@ export const validateUpdate = [
     check("PROV_NOM").optional().isString().withMessage("PROV_NOM must be a string"),
     check("PROV_CONTACTO").optional().isString().withMessage("PROV_CONTACTO must  be a string"),
     check("PROV_EST").optional().isString().withMessage("PROV_EST must  be a string"),
-    
+    check('ESTADO_REGISTRO').optional().isString().withMessage('PROD_DESC must be a string')
+        .isLength({ max: 1 }).withMessage('PROD_DESC must be 1 character long'),
+
     (req, res, next) => {
         validateResult(req, res, next);
     }

@@ -25,6 +25,11 @@ const detalle = connection.define('detalle', {
     Precio_U:{
         type: DataTypes.DECIMAL,
         allowNull: false,
+    },
+    ESTADO_REGISTRO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
     }
 })
 

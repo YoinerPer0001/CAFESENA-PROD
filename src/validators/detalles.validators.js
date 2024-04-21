@@ -28,6 +28,8 @@ export const validateUpdate = [
         .isNumeric().withMessage('cantidad must be numeric'),
     check('Precio_U').optional()
         .isNumeric().withMessage('Precio_U must be numeric'),
+    check('ESTADO_REGISTRO').optional().isString().withMessage('PROD_DESC must be a string')
+        .isLength({ max: 1 }).withMessage('PROD_DESC must be 1 character long'),
     (req, res, next) => {
         validateResult(req, res, next);
     }

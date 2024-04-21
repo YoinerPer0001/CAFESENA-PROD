@@ -18,7 +18,12 @@
       Id_User_FK: {
           type: DataTypes.STRING,
           allowNull: false,
-      }
+      },
+      ESTADO_REGISTRO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
+    }
     });
   
     export default Localizacion;

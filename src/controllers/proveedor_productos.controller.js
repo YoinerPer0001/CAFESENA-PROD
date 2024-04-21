@@ -28,7 +28,7 @@ export const getAllProvxProd = async (req, res) => {
                     //     attributes: atrbEclude
                     // }
                 ],
-                where: { Id_Prod_FK: id }
+                where: { Id_Prod_FK: id, ESTADO_REGISTRO: 1}//REGISTROS NO ELIMINADOS
 
             })
             if (data) {
@@ -66,7 +66,7 @@ export const getAllProdxProv = async (req, res) => {
                     //     attributes: atrbEclude
                     // }
                 ],
-                where: { Id_Prov_FK: id }
+                where: { Id_Prov_FK: id ,  ESTADO_REGISTRO: 1} //REGISTROS NO ELIMINADOS
 
             })
             if (data) {
@@ -177,7 +177,7 @@ export const updateProvProd = async (req, res) => {
 
                 const data = await proveedor_producto.update({
                     Id_Prov_FK: datos.Id_Prov,
-                    Id_Prod_FK: datos.Id_Prod
+                    Id_Prod_FK: datos.Id_Prod,
                 }, {
                     where: {
                         Id_Prov_Prod: id
@@ -190,12 +190,37 @@ export const updateProvProd = async (req, res) => {
                 }
             }
 
-        }else{
+        } else {
             response(res, 404, 404, 'Asignation Not found ')
         }
 
 
-        } catch (err) {
-            response(res, 500, 500, err)
-        }
+    } catch (err) {
+        response(res, 500, 500, err)
     }
+}
+
+export const deleteProvProd = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const provPrd = await proveedor_producto.findByPk(id);
+
+        if(provPrd){
+            const deleted = await proveedor_producto.update(
+                {ESTADO_REGISTRO: 0},
+                {where: {Id_Prov_Prod: id}}
+            )
+            if (deleted) {
+                response(res, 200)
+            } else {
+                response(res, 500, 500, 'Error deleting')
+            }
+        }else{
+            response(res, 404, 404, 'Asignation Not found ')
+        }
+
+    }catch (err) {
+        response(res, 500, 500, err)
+    }
+}

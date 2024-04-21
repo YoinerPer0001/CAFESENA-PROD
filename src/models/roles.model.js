@@ -15,7 +15,12 @@ const Role = connection.define('Role', {
     Nom_Rol: {
       type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
+    ESTADO_REGISTRO: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+  }
   });
   
   Role.hasMany(Usuario, {foreignKey:'Id_Rol_FK'})

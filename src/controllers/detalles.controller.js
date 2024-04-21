@@ -4,7 +4,7 @@ import uniqid from 'uniqid';
 import { response } from "../utils/responses.js";
 import Producto from "../models/productos.models.js";
 import Proveedor from "../models/proveedor.models.js";
-import {Encabezados} from "../models/encabezado.model.js";
+import { Encabezados } from "../models/encabezado.model.js";
 import detalle from "../models/detalles.model.js";
 
 
@@ -15,7 +15,11 @@ export const GetDet = async (req, res) => {
 
     try {
 
-        const compra = await detalle.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } });
+        const compra = await detalle.findAll(
+            {
+                attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+                where: { ESTADO_REGISTRO: 1 } //registros activos
+            });
 
         if (compra) {
             response(res, 200, 200, compra);
@@ -35,7 +39,8 @@ export const GetDetxId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const compra = await detalle.findByPk(id, { attributes: { exclude: ['createdAt', 'updatedAt'] } })
+        const compra = await detalle.findByPk(id, 
+            { attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] } })
 
         if (compra) {
             response(res, 200, 200, compra);
@@ -59,7 +64,10 @@ export const GetDetxIdHeader = async (req, res) => {
         const encabezado = await Encabezados.findByPk(id)
 
         if (encabezado) {
-            const detalles = await detalle.findAll({ where: { Id_Enc_FK: id }, attributes: { exclude: ['createdAt', 'updatedAt'] } })
+            const detalles = await detalle.findAll({
+                where: { Id_Enc_FK: id, ESTADO_REGISTRO: 1 },
+                attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
+            })
 
             if (detalles) {
                 response(res, 200, 200, detalles);
@@ -146,32 +154,33 @@ export const UpdateDetalle = async (req, res) => {
 
             detail = detail.dataValues;
 
-            if(datos.Id_Enc){
+            if (datos.Id_Enc) {
                 const enc = await Encabezados.findByPk(datos.Id_Enc)
-                if(!enc){
+                if (!enc) {
                     return response(res, 404, 404, "header not found");
-                }else{
+                } else {
                     updtEncabezado = datos.Id_Enc;
                 }
             }
 
-            if(datos.Id_Prod){
+            if (datos.Id_Prod) {
                 const Productos = await Producto.findByPk(datos.Id_Prod)
-                if(!Productos){
+                if (!Productos) {
                     return response(res, 404, 404, "Product not found");
-                }else{
+                } else {
                     updtProducto = datos.Id_Prod;
                 }
             }
-            
+
 
             const datosEnv = {
                 Id_Enc_FK: updtEncabezado || detail.Id_Enc_FK,
                 Id_Prod_Fk: updtProducto || detail.Id_Prod_Fk,
                 cantidad: datos.cantidad || detail.cantidad,
-                Precio_U: datos.Precio_U || detail.Precio_U
+                Precio_U: datos.Precio_U || detail.Precio_U,
+                ESTADO_REGISTRO: datos.ESTADO_REGISTRO || detail.ESTADO_REGISTRO
             }
-            console.log(datosEnv)
+          
 
             const updated = await detalle.update(datosEnv, { where: { Id_Detalle: id } })
 
@@ -190,4 +199,27 @@ export const UpdateDetalle = async (req, res) => {
         response(res, 500, 500, err);
 
     }
+}
+
+export const deleteDet = async (req, res, ) => {
+    try {
+        const { id } = req.params;
+        const det = await detalle.findByPk(id)
+        if (!det) {
+            response(res, 404, 404, 'detail not found');
+        } else {
+            
+            const deleted = await detalle.update({ESTADO_REGISTRO: 0}, {where: {Id_Detalle: id}})
+
+            if(deleted){
+                response(res, 200, 200);
+            }else{
+                response(res, 500, 500, 'Error Deleting');
+            }
+        }
+        
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+    
 }

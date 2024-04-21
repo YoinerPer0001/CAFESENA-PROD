@@ -12,15 +12,16 @@ export const GetProductos = async (req, res) => {
 
     try {
 
-        const data = await Producto.findAll({ 
-            attributes: { exclude: ['createdAt', 'updatedAt'] },
-            include:[
+        const data = await Producto.findAll({
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+            include: [
                 {
                     model: Categorias,
-                    attributes: { exclude: ['createdAt', 'updatedAt'] }
+                    attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
                 }
-            ]
-         })
+            ],
+            where: { ESTADO_REGISTRO: 1 },//REGISTROS NO ELIMINADOS
+        })
 
         if (data) {
             response(res, 200, 200, data)
@@ -42,16 +43,19 @@ export const GetProductosId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const data = await Producto.findByPk(id, 
-            { attributes: { exclude: ['createdAt', 'updatedAt'] },
-            include:[
-                {
-                    model: Categorias,
-                    attributes: { exclude: ['createdAt', 'updatedAt', 'activo'] },
+        const data = await Producto.findByPk(id,
+            {
+                attributes: { exclude: ['createdAt', 'updatedAt','ESTADO_REGISTRO'] },
+                include: [
+                    {
+                        model: Categorias,
+                        attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
 
-                }
-            ]
-         })
+                    }
+                ]
+                
+                
+            })
 
         if (data) {
             response(res, 200, 200, data)
@@ -138,7 +142,8 @@ export const updateProductos = async (req, res) => {
                         PROD_DESC: datos.PROD_DESC || producto.PROD_DESC,
                         PROD_PREC: datos.PROD_PREC || producto.PROD_PREC,
                         PROD_COD: datos.PROD_COD || producto.PROD_COD,
-                        CAT_ID_FK: datos.CAT_ID_FK || producto.CAT_ID_FK
+                        CAT_ID_FK: datos.CAT_ID_FK || producto.CAT_ID_FK,
+                        ESTADO_REGISTRO: datos.ESTADO_REGISTRO || producto.ESTADO_REGISTRO
                     }
 
                 }
@@ -150,6 +155,7 @@ export const updateProductos = async (req, res) => {
                     PROD_DESC: datos.PROD_DESC || producto.PROD_DESC,
                     PROD_PREC: datos.PROD_PREC || producto.PROD_PREC,
                     PROD_COD: datos.PROD_COD || producto.PROD_COD,
+                    ESTADO_REGISTRO: datos.ESTADO_REGISTRO || producto.ESTADO_REGISTRO
                 }
 
             }
@@ -172,58 +178,35 @@ export const updateProductos = async (req, res) => {
 
 }
 
-// export const deleteProductos = async (req, res) => {
+export const deleteProductos = async (req, res) => {
 
-//     jwt.verify(req.token, process.env.SECRETWORD, async (err, datos) => {
-//         if (err) {
+    try {
 
-//             response(res, 400, 105, "Something went wrong");
-//             console.log("sapos hptas")
-//         }
+        const { id } = req.params;
+ 
+        const producto = await Producto.findByPk(id)
 
-//         try {
+        if (producto) {
 
-//             const { id } = req.params;
-//             const { Id_Rol_FK } = datos.user;
+            const responses = await Producto.update(
+                {ESTADO_REGISTRO: 0},
+                {where:{PROD_ID: id}}
+            )
 
-//             const permiso = adminPermissions(Id_Rol_FK);
+            if(responses){
+                response(res, 200);
+            }else{
+                response(res, 500, 500, "Error updating")
+            }
+           
+        } else {
+            response(res, 404, 404, 'Product not found');
+        }
 
-//             if (!permiso) {
-//                 response(res, 401, 401, "You don't have permissions");
-//             }
+    } catch (err) {
 
-//             //verify category exist
-
-//             const producto = await getProID(id)
-
-//             if (producto.length > 0) {
-
-//                 const responses = await deleteProduc(id)
-
-
-//                 response(res, 200, 200, responses);
-
-
-
-
-//             } else {
-//                 response(res, 200, 204, category);
-//             }
-
-
-
-//         } catch (err) {
-
-//             if (err.errno) {
-
-//                 response(res, 400, err.errno, err.code);
-
-//             } else {
-//                 response(res, 500, 500, "something went wrong");
-//                 console.log(err)
-
-//             }
-//         }
-//     })
-// }
+        response(res, 500, 500, "something went wrong");
+       
+    }
+}
 

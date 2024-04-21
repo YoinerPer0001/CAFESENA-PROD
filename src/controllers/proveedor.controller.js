@@ -13,7 +13,10 @@ export const getProveedor = async (req, res) => {
 
     try {
 
-        const data = await Proveedor.findAll({ attributes: { exclude: ['createdAt', 'updatedAt'] } })
+        const data = await Proveedor.findAll({
+             attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+             where: {ESTADO_REGISTRO: 1}
+             })
         if (data) {
             response(res, 200, 200, data);
         }
@@ -101,10 +104,9 @@ export const UpdateProveedor = async (req, res) => {
             const data = {
                 PROV_NOM: datos.PROV_NOM || proveedor.PROV_NOM,
                 PROV_CONTACTO: datos.PROV_CONTACTO || proveedor.PROV_CONTACTO,
-                PROV_EST: datos.PROV_EST || proveedor.PROV_EST
+                PROV_EST: datos.PROV_EST || proveedor.PROV_EST,
+                ESTADO_REGISTRO: datos.ESTADO_REGISTRO || proveedor.ESTADO_REGISTRO
             }
-
-            console.log(data)
 
             const responses = await Proveedor.update(data, { where: { PROV_ID: id } })
 
@@ -127,41 +129,25 @@ export const UpdateProveedor = async (req, res) => {
 
 
 export const deleteProveedor = async (req, res) => {
-    jwt.verify(req.token, process.env.SECRETWORD, async (err, datos) => {
-        if (err) {
-            response(res, 400, 105, "Something went wrong");
-        }
-        try {
 
-            const { id } = req.params;
-            const { Id_Rol_FK } = datos.user;
-            const permiso = adminPermissions(Id_Rol_FK);
+    try {
+        const { id } = req.params;
+        const Prov = await Proveedor.findByPk(id)
+        if (!Prov) {
+            return response(res, 404, 404, 'Provider not found');
+        } else {
+            
+            const deleted = await Proveedor.update({ESTADO_REGISTRO: 0}, {where: {PROV_ID: id}})
 
-
-            if (!permiso) {
-                response(res, 401, 401, "You don't have permissions");
-
-            }
-            const proveedor = await getProvID(id)
-            if (proveedor.length > 0) {
-                const responses = await deleteProveedor(id)
-
-                response(res, 200, 200, responses);
-            } else {
-                response(res, 200, 204, proveedor);
-            }
-
-
-        } catch (err) {
-
-            if (err.errno) {
-
-                response(res, 400, err.errno, err.code);
-
-            } else {
-                response(res, 500, 500, "something went wrong");
-
+            if(deleted){
+                response(res, 200, 200);
+            }else{
+                response(res, 500, 500, 'Error Deleting');
             }
         }
-    })
+        
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+ 
 }

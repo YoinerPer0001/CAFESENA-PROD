@@ -42,7 +42,8 @@ export const validateUpdate = [
             }
         }),
     check('Id_User_FK').optional().not().isEmpty().withMessage('Id_User_FK cannot be empty').isNumeric().withMessage('Id_User_FK must be a numeric value'),
-
+    check('ESTADO_REGISTRO').optional().isString().withMessage('PROD_DESC must be a string')
+    .isLength({max:1}).withMessage('PROD_DESC must be 1 character long'),
     (req, res, next) => {
         validateResult(req, res, next);
     }

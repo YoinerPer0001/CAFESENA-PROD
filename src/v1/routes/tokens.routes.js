@@ -1,5 +1,5 @@
 import express from 'express';
-import {GetAllTokens, GetTokenssxUser,InsertToken, GetTokenssxTipo, UpdateTokens} from '../../controllers/tokens.controller.js'
+import {GetAllTokens, GetTokenssxUser,InsertToken, GetTokenssxTipo, UpdateTokens, deleteTok} from '../../controllers/tokens.controller.js'
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import {validateCreate,validateUpdate} from '../../validators/tokens.validators.js';
 import { adminPermiso } from "../../middlewares/managePermissions.js";
@@ -17,6 +17,8 @@ routesTokens.get('/api/v1/tokens/type/:tipo',verifyToken, adminPermiso, GetToken
 routesTokens.post('/api/v1/tokens/create',validateCreate,verifyToken,adminPermiso, InsertToken);
 
 routesTokens.put('/api/v1/tokens/update/:id',validateUpdate,verifyToken, adminPermiso, UpdateTokens)
+
+routesTokens.delete('/api/v1/tokens/delete/:id',verifyToken, adminPermiso, deleteTok)
 
 
 export default routesTokens;

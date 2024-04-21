@@ -25,7 +25,12 @@ const Proveedor = connection.define('Proveedor', {
         type: DataTypes.CHAR,
         allowNull: false,
         defaultValue: "A"
-      }
+      },
+      ESTADO_REGISTRO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
+    }
       
   });
 

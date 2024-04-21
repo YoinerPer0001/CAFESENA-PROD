@@ -17,6 +17,8 @@ export const validateUpdate = [
         .isISO8601().toDate().withMessage('FACT_FECH must be a date'),
     check('ID_EMPLEADO').optional().isString().withMessage('ID_EMPLEADO must be a string')
         .not().isEmpty().withMessage('ID_EMPLEADO cannot be empty'),
+    check('ESTADO_REGISTRO').optional().isString().withMessage('PROD_DESC must be a string')
+        .isLength({ max: 1 }).withMessage('PROD_DESC must be 1 character long'),
     (req, res, next) => {
         validateResult(req, res, next);
     }

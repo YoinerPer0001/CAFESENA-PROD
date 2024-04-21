@@ -16,6 +16,11 @@ const factura = connection.define('factura',{
     ID_EMPLEADO:{
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    ESTADO_REGISTRO: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1
     }
 })
 
