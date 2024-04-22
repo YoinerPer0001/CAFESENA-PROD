@@ -12,6 +12,7 @@ import routesEncabezados from './v1/routes/encabezados.routes.js';
 import routesDetalles from './v1/routes/detalles.routes.js';
 import routesFacturas from './v1/routes/facturas.routes.js';
 import routesProvProd from './v1/routes/proveedores_productos.routes.js';
+import compras_ventasroutes from './v1/routes/compras_ventas.routes.js';
 import cors from 'cors';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use(routesEncabezados);
 app.use(routesDetalles)
 app.use(routesFacturas)
 app.use(routesProvProd);
+app.use(compras_ventasroutes)
 
 
 app.use((req, res,) => {

@@ -63,7 +63,7 @@ export const createCategories = async (req, res) => {
 
         if (categoriaExists) {
 
-           return response(res, 409, 409, "category already exist");
+            return response(res, 409, 409, "category already exist");
 
         } else {
 
@@ -154,26 +154,21 @@ export const deleteCat = async (req, res) => {
         if (!data) {
             response(res, 404, 404, 'Category not found')
         } else {
-            const borrarCategoria = Categorias.update(
-                { ESTADO_REGISTRO: false },
-                {
-                    where: { Id_Cat: id }
-                }
-            )
-            if (borrarCategoria) {
-                const updateProdAsc = await Producto.update(
-                    { CAT_ID_FK: 14 },//cambiamos la relacion a la categoria "sin categoria" para que los datos permanezcan
-                    { where: { CAT_ID_FK: id } }
-                )
+            const prod = await Producto.findAll({ where: { CAT_ID_FK: id } })
+            if (prod) {
+                response(res, 409, 409, 'You cannot delete this category because it has products')
+            } else {
+                const borrarCategoria = Categorias.update(
+                    { ESTADO_REGISTRO: false },
+                    {
+                        where: { Id_Cat: id }
+                    })
 
-                if(updateProdAsc){
-                    response(res, 200)
-
-                }else{
+                if (borrarCategoria) {
+                    response(res, 200, 200, 'Category deleted successfully')
+                } else {
                     response(res, 500, 500, 'Error deleting category')
                 }
-            } else {
-                response(res, 500, 500, 'Error deleting category')
             }
         }
 
