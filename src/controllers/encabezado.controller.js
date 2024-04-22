@@ -147,7 +147,7 @@ export const UpdateEncabezado = async (req, res) => {
 
         if (!Encabezado) {
 
-            response(res, 404, 404, "encabezado don't exist");
+            response(res, 404, 404, "header don't exist");
 
         } else {
             Encabezado = Encabezado.dataValues;
