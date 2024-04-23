@@ -2,7 +2,13 @@ import 'dotenv/config'
 import { response } from "../utils/responses.js";
 import Producto from "../models/productos.models.js";
 import Categorias from "../models/categorias.model.js";
+import detalle from "../models/detalles.model.js";
+import proveedor_producto from "../models/proveedores_productos.model.js";
 import uniqid from 'uniqid';
+import { connection } from '../database/db.js';
+import Proveedor from '../models/proveedor.models.js';
+import lotes from '../models/lotes.model.js';
+import existencias from '../models/existencias.model.js';
 
 // get all productos from response object
 export const GetProductos = async (req, res) => {
@@ -42,7 +48,7 @@ export const GetProductosId = async (req, res) => {
 
         const data = await Producto.findByPk(id,
             {
-                attributes: { exclude: ['createdAt', 'updatedAt','ESTADO_REGISTRO'] },
+                attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
                 include: [
                     {
                         model: Categorias,
@@ -50,8 +56,8 @@ export const GetProductosId = async (req, res) => {
 
                     }
                 ]
-                
-                
+
+
             })
 
         if (data) {
@@ -73,13 +79,14 @@ export const createProducts = async (req, res) => {
 
     try {
 
+        let transaccion;
+
         const PROD_ID = uniqid();
 
-        const { CAT_ID_FK, PROD_NOM, PROD_DESC, PROD_PREC, PROD_COD } = req.body;
+        const { CAT_ID_FK, PROD_NOM, PROD_DESC, PROD_PREC, PROD_COD, ID_LOTE, INV_ID, ID_PROV } = req.body;
 
-        const productsExis = await Producto.findOne({ where: { PROD_COD: PROD_COD } })
-        const catExist = await Categorias.findByPk(CAT_ID_FK)
-
+        const productsExis = await Producto.findOne({ where: { PROD_COD: PROD_COD } });
+        const catExist = await Categorias.findByPk(CAT_ID_FK);
 
         if (productsExis || !catExist) {
 
@@ -90,8 +97,9 @@ export const createProducts = async (req, res) => {
             }
 
         } else {
+            transaccion = await connection.transaction();
 
-            //create category
+            //create prod
             const dataPro = {
                 PROD_ID: PROD_ID,
                 PROD_COD: PROD_COD,
@@ -101,20 +109,59 @@ export const createProducts = async (req, res) => {
                 CAT_ID_FK: CAT_ID_FK
             }
 
-            const nuevoProducts = await Producto.create(dataPro);
-            if (nuevoProducts) {
-                response(res, 200);
+            const nuevoProducts = await Producto.create(dataPro, { transaction: transaccion });
+
+            //Asignamos el producto al proveedor
+
+            const proveedor = await Proveedor.findByPk(ID_PROV);
+            if (!proveedor) {
+                return response(res, 404, 404, 'Provider not found')
             } else {
-                response(res, 500, 500, "Error creating")
+                const Id_Prov_Prod = uniqid();
+                const data = await proveedor_producto.create({
+                    Id_Prov_Prod: Id_Prov_Prod,
+                    Id_Prov_FK: ID_PROV,
+                    Id_Prod_FK: PROD_ID
+                }, { transaction: transaccion })
             }
+
+            //creamos la existencia
+
+            const lote = await lotes.findByPk(ID_LOTE)
+            const prov = await Proveedor.findByPk(ID_PROV)
+            if (!lote || !prov) {
+
+                return response(res, 404, 404, 'Lote and Provider not found')
+
+            } else {
+
+                const dataInv = {
+                    PRO_ID_FK: PROD_ID,
+                    INV_ID_FK: INV_ID,
+                    ID_LOTE_FK: ID_LOTE,
+                    CANT_PROD: 0
+                }
+
+                const existencia = await existencias.create(dataInv, { transaction: transaccion })
+
+                await transaccion.commit();
+
+                response(res, 200)
+            }
+
+
         }
 
     } catch (err) {
         response(res, 500, 500, err);
+        if (transaccion) await transaccion.rollback(); // Corrección aquí
+        console.error('Error al agregar datos:', err);
+
 
     }
 
 }
+
 
 export const updateProductos = async (req, res) => {
 
@@ -180,22 +227,40 @@ export const deleteProductos = async (req, res) => {
     try {
 
         const { id } = req.params;
- 
+
         const producto = await Producto.findByPk(id)
 
         if (producto) {
 
-            const responses = await Producto.update(
-                {ESTADO_REGISTRO: 0},
-                {where:{PROD_ID: id}}
-            )
+            //verificamos que no tenga detalles asociados o proveedores asociados
+            const detalles = await detalle.findAll({ where: { Id_Prod_Fk: id } })
 
-            if(responses){
-                response(res, 200);
-            }else{
-                response(res, 500, 500, "Error updating")
+            //verificamos que no tenga proveedores asociados
+            const proveedores = await proveedor_producto.findAll({ where: { Id_Prod_FK: id } })
+
+            if (detalles || proveedores) {
+                if (detalles && proveedores) {
+                    return response(res, 403, 403, "You cannot delete this product, because has details and providers associated")
+                } else if (detalles && !proveedores) {
+                    return response(res, 403, 403, "You cannot delete this product, because has details associated")
+                } else {
+                    return response(res, 403, 403, "You cannot delete this product, because has providers associated")
+                }
+            } else {
+
+                const responses = await Producto.update(
+                    { ESTADO_REGISTRO: 0 },
+                    { where: { PROD_ID: id } }
+                )
+
+                if (responses) {
+                    response(res, 200);
+                } else {
+                    response(res, 500, 500, "Error updating")
+                }
+
             }
-           
+
         } else {
             response(res, 404, 404, 'Product not found');
         }
@@ -203,7 +268,7 @@ export const deleteProductos = async (req, res) => {
     } catch (err) {
 
         response(res, 500, 500, "something went wrong");
-       
+
     }
 }
 

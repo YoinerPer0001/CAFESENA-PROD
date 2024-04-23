@@ -43,7 +43,7 @@ export const GetInventarioxId = async (req, res) => {
             {
                 attributes: { exclude: ['createdAt', 'updatedAt'] },
                 where: { ESTADO_REGISTRO: 1 },// REGISTROS ACTIVOS
-            
+
             })
 
         if (inventory) {
@@ -108,33 +108,24 @@ export const createInventario = async (req, res) => {
         const INV_ID = uniqid();
 
         const { CANT_TOTAL } = req.body;
-
-        const producto = await Producto.findByPk(PROD_ID_FK);
-
-        if (!producto) {
-            response(res, 404, 404, "Product not found");
-
-        } else {
-
-            //create inventory
-            const data = {
-                INV_ID: INV_ID,
-                CANT_TOTAL: PROD_CANT,
-            }
-
-            const newInventario = await Inventarios.create(data);
-            if (newInventario) {
-                response(res, 200)
-            } else {
-                response(res, 500, 500, "Error creating")
-            }
-
+        //create inventory
+        const data = {
+            INV_ID: INV_ID,
+            CANT_TOTAL: CANT_TOTAL,
         }
+
+        const newInventario = await Inventarios.create(data);
+        if (newInventario) {
+            response(res, 200)
+        } else {
+            response(res, 500, 500, "Error creating")
+        }
+
     } catch (err) {
 
-        response(res, 500, 500, err);
+    response(res, 500, 500, err);
 
-    }
+}
 }
 
 export const UpdateInventarios = async (req, res) => {
@@ -191,7 +182,7 @@ export const deleteInv = async (req, res) => {
         } else {
             const existencia = await existencias.findAll({ where: { INV_ID_FK: id } })
             if (existencia) {
-               return response(res, 409, 409, 'You cannot delete this inventory because it has existens associated')
+                return response(res, 403, 403, 'You cannot delete this inventory because it has existens associated')
             } else {
                 const borrar = Inventarios.update(
                     { ESTADO_REGISTRO: false },

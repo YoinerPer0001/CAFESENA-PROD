@@ -1,8 +1,9 @@
 import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
+import lotes from "./lotes.model.js";
 
 
-const existencias = connection.define('existencia', {
+const existencias = connection.define('existencias', {
     EX_ID: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -17,26 +18,21 @@ const existencias = connection.define('existencia', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    LOTE: {
+    ID_LOTE_FK: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    FECHA_REC: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-    FECH_VENC: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
-    CANT_EXIST: {
+    CANT_PROD:{
         type: DataTypes.INTEGER,
         allowNull: false,
     },
     ESTADO_REGISTRO: {
         type: DataTypes.STRING,
         allowNull: false,
+        defaultValue:1
     }
 })
+
+
 
 export default existencias;

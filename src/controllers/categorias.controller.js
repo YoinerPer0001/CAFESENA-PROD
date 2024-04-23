@@ -156,7 +156,7 @@ export const deleteCat = async (req, res) => {
         } else {
             const prod = await Producto.findAll({ where: { CAT_ID_FK: id } })
             if (prod) {
-               return response(res, 409, 409, 'You cannot delete this category because it has products')
+               return response(res, 403, 403, 'You cannot delete this category because it has products')
             } else {
                 const borrarCategoria = Categorias.update(
                     { ESTADO_REGISTRO: false },
