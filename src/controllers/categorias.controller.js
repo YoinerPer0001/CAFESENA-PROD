@@ -152,11 +152,11 @@ export const deleteCat = async (req, res) => {
         const { id } = req.params;
         const data = await Categorias.findByPk(id)
         if (!data) {
-            response(res, 404, 404, 'Category not found')
+            return response(res, 404, 404, 'Category not found')
         } else {
             const prod = await Producto.findAll({ where: { CAT_ID_FK: id } })
             if (prod) {
-                response(res, 409, 409, 'You cannot delete this category because it has products')
+               return response(res, 409, 409, 'You cannot delete this category because it has products')
             } else {
                 const borrarCategoria = Categorias.update(
                     { ESTADO_REGISTRO: false },
@@ -165,9 +165,9 @@ export const deleteCat = async (req, res) => {
                     })
 
                 if (borrarCategoria) {
-                    response(res, 200, 200, 'Category deleted successfully')
+                    return response(res, 200, 200, 'Category deleted successfully')
                 } else {
-                    response(res, 500, 500, 'Error deleting category')
+                    return response(res, 500, 500, 'Error deleting category')
                 }
             }
         }

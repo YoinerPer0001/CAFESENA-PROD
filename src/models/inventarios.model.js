@@ -1,6 +1,7 @@
 import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
 import Producto from "./productos.models.js";
+import existencias from "./existencias.model.js";
 
 
 const Inventarios = connection.define('inventario', {
@@ -11,11 +12,8 @@ const Inventarios = connection.define('inventario', {
     primaryKey: true,
 
   },
-  PROD_ID_FK: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  PROD_CANT: {
+  
+  CANT_TOTAL: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -24,18 +22,6 @@ const Inventarios = connection.define('inventario', {
     allowNull: false,
     defaultValue: 'S'
   },
-  LOTE:{
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  FECH_REC:{
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  FECH_VENC:{
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
   ESTADO_REGISTRO:{
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -43,7 +29,7 @@ const Inventarios = connection.define('inventario', {
   }
 });
 
-Inventarios.belongsTo(Producto, { foreignKey: 'PROD_ID_FK' })
-Producto.hasMany(Inventarios, { foreignKey: 'PROD_ID_FK' })
+Inventarios.hasMany(existencias, { foreignKey: 'PROD_ID_FK', targetKey: 'PROD_ID'})
+existencias.belongsTo(Inventarios, { foreignKey: 'PROD_ID_FK' })
 
 export default Inventarios;

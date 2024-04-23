@@ -5,6 +5,7 @@ import { response } from "../utils/responses.js";
 import Inventarios from "../models/inventarios.model.js";
 import uniqid from 'uniqid';
 import Producto from "../models/productos.models.js";
+import existencias from '../models/existencias.model.js';
 
 
 
@@ -41,13 +42,8 @@ export const GetInventarioxId = async (req, res) => {
         const inventory = await Inventarios.findByPk(id,
             {
                 attributes: { exclude: ['createdAt', 'updatedAt'] },
-                where: { ESTADO_REGISTRO: 1 } ,// REGISTROS ACTIVOS
-                include:[
-                    {
-                        model: Producto,
-                        attributes: { exclude: ['createdAt', 'updatedAt'] }
-                    }
-                ]
+                where: { ESTADO_REGISTRO: 1 },// REGISTROS ACTIVOS
+            
             })
 
         if (inventory) {
@@ -64,46 +60,46 @@ export const GetInventarioxId = async (req, res) => {
 
 }
 
-export const GetInventarioxLote = async (req, res) => {
+// export const GetInventarioxLote = async (req, res) => {
 
-    try {
+//     try {
 
-        const { lote } = req.params;
+//         const { lote } = req.params;
 
-        const loteExist = await Inventarios.findOne({ where: { LOTE: lote } })
+//         const loteExist = await Inventarios.findOne({ where: { LOTE: lote } })
 
-        if (!loteExist) {
-            response(res, 404, 404, "Lote not found");
-        } else {
-            const inventory = await Inventarios.findAll(
-                {
-                    attributes: { exclude: ['createdAt', 'updatedAt'] },
-                    where: { ESTADO_REGISTRO: 1, LOTE: lote }, // REGISTROS ACTIVOS
-                    include: [
-                        {
-                            model: Producto,
-                            attributes: { exclude: ['createdAt', 'updatedAt'] }
-                        }
-                    ]
-                })
+//         if (!loteExist) {
+//             response(res, 404, 404, "Lote not found");
+//         } else {
+//             const inventory = await Inventarios.findAll(
+//                 {
+//                     attributes: { exclude: ['createdAt', 'updatedAt'] },
+//                     where: { ESTADO_REGISTRO: 1, LOTE: lote }, // REGISTROS ACTIVOS
+//                     include: [
+//                         {
+//                             model: Producto,
+//                             attributes: { exclude: ['createdAt', 'updatedAt'] }
+//                         }
+//                     ]
+//                 })
 
-            if (inventory) {
-                response(res, 200, 200, inventory);
-            }
-            else {
-                response(res, 404, 404, "Inventory not found");
-            }
+//             if (inventory) {
+//                 response(res, 200, 200, inventory);
+//             }
+//             else {
+//                 response(res, 404, 404, "Inventory not found");
+//             }
 
-        }
-
-
+//         }
 
 
-    } catch (error) {
-        response(res, 500, 500, error);
-    }
 
-}
+
+//     } catch (error) {
+//         response(res, 500, 500, error);
+//     }
+
+// }
 
 
 export const createInventario = async (req, res) => {
@@ -111,7 +107,7 @@ export const createInventario = async (req, res) => {
 
         const INV_ID = uniqid();
 
-        const { PROD_ID_FK, PROD_CANT, LOTE, FECH_REC, FECH_VENC } = req.body;
+        const { CANT_TOTAL } = req.body;
 
         const producto = await Producto.findByPk(PROD_ID_FK);
 
@@ -123,11 +119,7 @@ export const createInventario = async (req, res) => {
             //create inventory
             const data = {
                 INV_ID: INV_ID,
-                PROD_ID_FK: PROD_ID_FK,
-                PROD_CANT: PROD_CANT,
-                LOTE: LOTE,
-                FECH_REC: FECH_REC,
-                FECH_VENC: FECH_VENC
+                CANT_TOTAL: PROD_CANT,
             }
 
             const newInventario = await Inventarios.create(data);
@@ -163,36 +155,12 @@ export const UpdateInventarios = async (req, res) => {
             inventory = inventory.dataValues;
             let dataenv;
 
-            if (datos.PROD_ID_FK) {
-                const producto = await Producto.findByPk(datos.PROD_ID_FK);
-
-                if (!producto) {
-                    return response(res, 404, 404, "Product not found");
-
-                } else {
-
-                    dataenv = {
-                        PROD_ID_FK: datos.PROD_ID_FK,
-                        PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
-                        INV_EST: datos.INV_EST || inventory.INV_EST,
-                        LOTE: datos.LOTE || inventory.LOTE,
-                        FECH_REC: datos.FECH_REC || inventory.FECH_REC,
-                        FECH_VENC: datos.FECH_VENC || inventory.FECH_VENC,
-                        ESTADO_REGISTRO: datos.ESTADO_REGISTRO || inventory.ESTADO_REGISTRO
-                    }
-                }
-
-            } else {
-
-                dataenv = {
-                    PROD_CANT: datos.PROD_CANT || inventory.PROD_CANT,
-                    INV_EST: datos.INV_EST || inventory.INV_EST,
-                    LOTE: datos.LOTE || inventory.LOTE,
-                    FECH_REC: datos.FECH_REC || inventory.FECH_REC,
-                    FECH_VENC: datos.FECH_VENC || inventory.FECH_VENC,
-                    ESTADO_REGISTRO: datos.ESTADO_REGISTRO || inventory.ESTADO_REGISTRO
-                }
+            dataenv = {
+                CANT_TOTAL: datos.CANT_TOTAL || inventory.CANT_TOTAL,
+                INV_EST: datos.INV_EST || inventory.INV_EST,
+                ESTADO_REGISTRO: datos.ESTADO_REGISTRO || inventory.ESTADO_REGISTRO
             }
+
 
             const responses = await Inventarios.update(dataenv, { where: { INV_ID: id } })
 
@@ -215,28 +183,28 @@ export const UpdateInventarios = async (req, res) => {
 
 
 export const deleteInv = async (req, res) => {
-    const { id } = req.params;
     try {
-
+        const { id } = req.params;
         const data = await Inventarios.findByPk(id)
         if (!data) {
-            response(res, 404, 404, 'Inventory not found')
+            return response(res, 404, 404, 'Inventory not found')
         } else {
+            const existencia = await existencias.findAll({ where: { INV_ID_FK: id } })
+            if (existencia) {
+               return response(res, 409, 409, 'You cannot delete this inventory because it has existens associated')
+            } else {
+                const borrar = Inventarios.update(
+                    { ESTADO_REGISTRO: false },
+                    {
+                        where: { INV_ID: id }
+                    })
 
-            const borrarInventario = Inventarios.update(
-                { ESTADO_REGISTRO: false },
-                {
-                    where: { INV_ID: id, ESTADO_REGISTRO: true }
+                if (borrar) {
+                    return response(res, 200, 200, 'Inventory deleted successfully')
+                } else {
+                    return response(res, 500, 500, 'Error deleting Inventory')
                 }
-            )
-
-            if (borrarInventario) {
-                response(res, 200)
             }
-            else {
-                response(res, 500, 500, "Error deleting")
-            }
-
         }
 
 
