@@ -15,6 +15,7 @@ import routesProvProd from './v1/routes/proveedores_productos.routes.js';
 import compras_ventasroutes from './v1/routes/compras_ventas.routes.js';
 import routesExist from './v1/routes/existencias.routes.js';
 import cors from 'cors';
+import routesLotes from './v1/routes/lotes.routes.js';
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use(routesFacturas)
 app.use(routesProvProd);
 app.use(compras_ventasroutes)
 app.use(routesExist)
+app.use(routesLotes)
 
 
 app.use((req, res,) => {
