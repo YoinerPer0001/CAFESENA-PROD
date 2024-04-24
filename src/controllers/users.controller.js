@@ -328,20 +328,20 @@ export const loginUser = async (req, res) => {
 
 
                     if (resp) {
-                        const cookieP = cookieParser();
+                        // const cookieP = cookieParser();
 
 
-                        //serializar
-                        const serialized = serialize('sessionToken', datosToken, {
-                            httpOnly: true,
-                            secure: true,
-                            sameSite: 'none',
-                            maxAge: 86400000,
-                            path: '/'
-                        })
-                        res.setHeader('Set-Cookie', serialized)
+                        // //serializar
+                        // const serialized = serialize('sessionToken', datosToken, {
+                        //     httpOnly: true,
+                        //     secure: true,
+                        //     sameSite: 'none',
+                        //     maxAge: 86400000,
+                        //     path: '/'
+                        // })
+                        // res.setHeader('Set-Cookie', serialized)
 
-                        response(res, 200, 200, "success Login");
+                        response(res, 200, 200, datosToken);
 
                     } else {
 
