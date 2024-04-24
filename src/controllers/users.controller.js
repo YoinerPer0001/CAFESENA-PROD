@@ -307,6 +307,7 @@ export const loginUser = async (req, res) => {
                     Ape_User: user.Ape_User,
                     Ema_User: user.Ema_User,
                     Id_Rol_FK: user.Id_Rol_FK,
+                    
                 }
 
                 //generamos token y save on db
@@ -506,6 +507,29 @@ export const deleteUser = async (req, res, ) => {
         response(res, 500, 500, err);
     }
     
+}
+
+export const closeSession = async (req, res) => {
+    try{
+        const token = req.token;
+
+        if(!token){
+            response(res, 401, 401, 'No token provided');
+        }else{
+            const {user} = jwt.decode(token, process.env.SECRETWORD || "juniorTupapa");
+
+            const deleted = await Token.update({ESTADO_REGISTRO: false}, {where:{token: token, User_Id_FK: user.Id_User, ESTADO_REGISTRO: 1}})
+
+            if(deleted){
+                response(res, 200, 200, 'success logout');
+            }else{
+                response(res, 500, 500, 'Error');
+            }
+        }
+
+    }catch(err){
+        response(res, 500, 500, err);
+    }
 }
 
 
