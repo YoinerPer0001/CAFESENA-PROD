@@ -88,3 +88,13 @@ export const validateCodIp = [
         validateResult(req, res, next);
     }
 ]
+
+
+export const validatelogout = [
+    check('token').exists().withMessage('token is required')
+    .not().isEmpty().withMessage('token cannot be empty')
+    .isString().withMessage('token must be a string'),
+    (req, res, next) => {
+        validateResult(req, res, next);
+    }
+]

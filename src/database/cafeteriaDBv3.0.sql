@@ -143,6 +143,9 @@ CREATE TABLE `facturas` (
 
 /*Data for the table `facturas` */
 
+insert  into `facturas`(`FACT_ID`,`FACT_FECH`,`ID_EMPLEADO`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
+('erxyjd40lvd1itmf','2024-04-24','hle1ffcmolul8uo6n',1,'2024-04-24 19:34:30','2024-04-24 19:34:30');
+
 /*Table structure for table `inventarios` */
 
 DROP TABLE IF EXISTS `inventarios`;
@@ -317,7 +320,7 @@ CREATE TABLE `tokens` (
   PRIMARY KEY (`Id_Token`),
   KEY `Usuario_Id` (`User_Id_FK`),
   CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`User_Id_FK`) REFERENCES `usuarios` (`Id_User`)
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `tokens` */
 
@@ -352,7 +355,10 @@ insert  into `tokens`(`Id_Token`,`Token`,`Fec_Caducidad`,`User_Id_FK`,`Tipo_toke
 (52,'282573','1713799620','hle1ffd7wlvb3m6ud','3',1,'2024-04-22 15:17:00','2024-04-22 15:17:00'),
 (53,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZkN3dsdmIzbTZ1ZCIsIk5vbV9Vc2VyIjoiQW5kcmVzIiwiQXBlX1VzZXIiOiJEZSBhdmlsYSIsIkVtYV9Vc2VyIjoiYW5kcmVzY2F2YWRpYWFhQGdtYWlsLmNvbSIsIklkX1JvbF9GSyI6M30sImlhdCI6MTcxMzc5OTA3NCwiZXhwIjoxNzEzODg1NDc0fQ.PFXLitexq3b-mf-FMOrv1D2TOzFwGv1KlPk2kQ2vWt8','1713885474','hle1ffd7wlvb3m6ud','2',1,'2024-04-22 15:17:54','2024-04-22 15:17:54'),
 (54,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTAwNjI5LCJleHAiOjE3MTM5ODcwMjl9.KV7yHnQ8KGPNizUB3UkPgq0_AyRQQynQMOlEgu9HRzg','1713987029','hle1ffcmolul8uo6n','2',1,'2024-04-23 19:30:29','2024-04-23 19:30:29'),
-(55,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTAwNjYxLCJleHAiOjE3MTM5ODcwNjF9.NpIgiDPEJb8DgmvV4TjiJ9c_r451qjLkCkAtbefWMus','1713987061','hle1ffcmolul8uo6n','2',1,'2024-04-23 19:31:01','2024-04-23 19:31:01');
+(55,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTAwNjYxLCJleHAiOjE3MTM5ODcwNjF9.NpIgiDPEJb8DgmvV4TjiJ9c_r451qjLkCkAtbefWMus','1713987061','hle1ffcmolul8uo6n','2',1,'2024-04-23 19:31:01','2024-04-23 19:31:01'),
+(56,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTg3MTQ2LCJleHAiOjE3MTQwNzM1NDZ9.XfkvACVHc_CwQN-uamntfPP1szYnr9rQa85ZDvQFGZA','1714073546','hle1ffcmolul8uo6n','2',1,'2024-04-24 19:32:26','2024-04-24 19:32:26'),
+(57,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTg3MTcyLCJleHAiOjE3MTQwNzM1NzJ9.ZftPYMz0VZvG0bxcD6Kdc8YwMhEecBJN9NyZ1_kUwm8','1714073572','hle1ffcmolul8uo6n','2',0,'2024-04-24 19:32:52','2024-04-24 20:11:20'),
+(58,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTkwMjc5LCJleHAiOjE3MTQwNzY2Nzl9.yVP47GifOooUQaPz5d_RNpZ8vi-Sd0wde-qGC_CsjHA','1714076679','hle1ffcmolul8uo6n','2',0,'2024-04-24 20:24:39','2024-04-24 20:24:58');
 
 /*Table structure for table `usuarios` */
 

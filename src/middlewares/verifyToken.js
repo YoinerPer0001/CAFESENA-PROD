@@ -1,5 +1,6 @@
 import jsonwebtoken from 'jsonwebtoken';
 import {response} from '../utils/responses.js'
+import Token from '../models/tokens.model.js';
 const jwt = jsonwebtoken;
 
 export const verifyToken = async (req, res, next) => {
@@ -41,12 +42,29 @@ export const verifyToken = async (req, res, next) => {
             }else{
                 req.token = bearerToken;
 
-                jwt.verify(bearerToken, process.env.SECRETWORD || 'juniorTupapa',(err,data)=>{
+                jwt.verify(bearerToken, process.env.SECRETWORD || 'juniorTupapa',async (err,data)=>{
                     if(err){
                         response(res,401,401,"Token Error");
                     }else{
-                        req.Tokendata = data;
-                        next();
+                        const {Id_User} = decodetoken.payload.user;
+        
+                        let estReg = await Token.findOne({where:{token:bearerToken, User_Id_FK: Id_User}});
+                        
+                        if(estReg){
+                            const {ESTADO_REGISTRO} = estReg.dataValues; 
+                            if(ESTADO_REGISTRO ){
+                                req.Tokendata = data;
+                           
+                                next();
+                                
+                            }else{
+                                response(res,401,401,"Expired token, because logout");
+                            }
+                            
+                        }else{
+                            response(res,401,401,"Expired token, because logout");
+                        }
+                        
                     }
                 });
             

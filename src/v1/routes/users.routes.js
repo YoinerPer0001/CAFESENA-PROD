@@ -1,8 +1,8 @@
 import express from "express";
-import {getUsers, loginUser, regUser,ValidateEmail, ValidateCod, UpdateUserData, getUserxId, deleteUser} from "../../controllers/users.controller.js"
+import {getUsers, loginUser, regUser,ValidateEmail, ValidateCod,closeSession, UpdateUserData, getUserxId, deleteUser} from "../../controllers/users.controller.js"
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { adminPermiso } from "../../middlewares/managePermissions.js";
-import {validateCreate , validateUpdate, validateLogin, validateEmail, validateCodIp} from "../../validators/users.validators.js";
+import {validateCreate , validateUpdate,validatelogout, validateLogin, validateEmail, validateCodIp} from "../../validators/users.validators.js";
 
 const userRoutes = express();
 
@@ -40,6 +40,9 @@ userRoutes.put('/api/v1/users/update/:id',validateUpdate,verifyToken, adminPermi
 
 
 userRoutes.delete('/api/v1/users/delete/:id',verifyToken, adminPermiso, deleteUser)
+
+
+userRoutes.get('/api/v1/user/logout',verifyToken, closeSession)
 
 
 
