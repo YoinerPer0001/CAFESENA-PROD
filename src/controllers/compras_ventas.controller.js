@@ -169,7 +169,17 @@ export const createCompra_Venta = async (req, res) => {
                     }
                 } else {
 
-                    // Actualizar existencias
+                    const exist = await existencias.findOne(
+                        { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
+                    );
+
+                    const {CANT_PROD} = exist.dataValues;
+
+                    const cantRestante =  parseInt(CANT_PROD) - CANTIDAD;
+                    
+                    if(cantRestante >= 0){ //verificamos que exista la cantidad necesaria en el inventario para vender
+
+                        // Actualizar existencias
                     await existencias.update(
                         { CANT_PROD: connection.literal(`CANT_PROD - ${CANTIDAD}`) },
                         { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
@@ -189,6 +199,12 @@ export const createCompra_Venta = async (req, res) => {
                     } else {
                         await transaction.rollback();
                     }
+
+                    }else{
+                        response(res, 404, 404, 'Not enough product in inventory')
+                    }
+
+                    
 
                 }
             }
