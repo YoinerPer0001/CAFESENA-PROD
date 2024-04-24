@@ -1,6 +1,6 @@
 import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
-import lotes from "./lotes.model.js";
+import Producto from "./productos.models.js";
 
 
 const existencias = connection.define('existencias', {
@@ -32,7 +32,6 @@ const existencias = connection.define('existencias', {
         defaultValue:1
     }
 })
-
 
 
 export default existencias;

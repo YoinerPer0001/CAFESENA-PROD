@@ -1,5 +1,6 @@
 import { connection } from "../database/db.js";
 import { Sequelize, DataTypes } from "sequelize";
+import existencias from "./existencias.model.js";
 
 
 const Producto = connection.define('producto', {
@@ -9,7 +10,6 @@ const Producto = connection.define('producto', {
       allowNull: false,
       primaryKey:true,
       autoIncrement:true,
-
     },
     PROD_COD: {
       type: DataTypes.STRING,
@@ -40,6 +40,9 @@ const Producto = connection.define('producto', {
     // Other model options go here
   });
 
-  
+  Producto.hasMany(existencias, {foreignKey:'PRO_ID_FK'})
+  existencias.belongsTo(Producto,{foreignKey :'PRO_ID_FK', targetKey: 'PROD_ID'})
 
   export default Producto;
+
+

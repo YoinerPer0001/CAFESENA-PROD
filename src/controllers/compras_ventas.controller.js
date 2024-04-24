@@ -3,8 +3,12 @@ import Producto from "../models/productos.models.js";
 import detalle from "../models/detalles.model.js";
 import { Encabezados } from "../models/encabezado.model.js";
 import uniqid from 'uniqid';
+import Inventarios from "../models/inventarios.model.js";
 import { response } from "../utils/responses.js";
 import { connection } from "../database/db.js";
+import existencias from "../models/existencias.model.js";
+import { where } from "sequelize";
+import lotes from "../models/lotes.model.js";
 
 //obtiene encabezados de un usuario x tipo
 export const GetxUser = async (req, res) => {
@@ -21,13 +25,13 @@ export const GetxUser = async (req, res) => {
             const encabezados = await Encabezados.findAll({
                 where: { ID_USER_FK: id, TIPO_ENCABE: type, ESTADO_REGISTRO: 1 },
                 attributes: excludeAtr,
-                include:[
+                include: [
                     {
-                        model:detalle,
+                        model: detalle,
                         attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO', 'Id_Enc_FK', 'Id_Prod_Fk'] },
-                        include:[
+                        include: [
                             {
-                                model:Producto,
+                                model: Producto,
                                 attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
                             }
                         ]
@@ -61,13 +65,13 @@ export const GetxType = async (req, res) => {
         const encabezados = await Encabezados.findAll({
             where: { TIPO_ENCABE: type, ESTADO_REGISTRO: 1 },
             attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
-            include:[
+            include: [
                 {
-                    model:detalle,
+                    model: detalle,
                     attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO', 'Id_Enc_FK', 'Id_Prod_Fk'] },
-                    include:[
+                    include: [
                         {
-                            model:Producto,
+                            model: Producto,
                             attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
                         }
                     ]
@@ -91,11 +95,11 @@ export const createCompra_Venta = async (req, res) => {
 
     let transaction;
     try {
-        const { ID_USER, MET_PAGO, TOTAL, TIPO_ENCABE, OBJ_DETALLES } = req.body;
+        const { ID_USER, MET_PAGO, TOTAL, TIPO_ENCABE, ID_PROD, CANTIDAD, PRECIO_U, LOTE_ID } = req.body;
         const ENC_ID = uniqid();
-        
+
         const usuario = await Usuario.findByPk(ID_USER);
-        
+
 
         if (usuario) {
             const data = {
@@ -110,39 +114,87 @@ export const createCompra_Venta = async (req, res) => {
             transaction = await connection.transaction(); //transaccion para poder guardar valoresn en ambas entidades
 
 
-            const encabezado = await Encabezados.create(data, { transaction })
+            const encabezado = await Encabezados.create(data, { transaction: transaction })
 
 
             //creamos los detalles asociados a el encabezado
 
-            await Promise.all(OBJ_DETALLES.map(async det => {
-                const prod = await Producto.findByPk(det.Id_Prod);
-                if (!prod) {
-                    return response(res, 404, 404, "Product not found");
-                } else {
-                    const Id_Detalle = uniqid();
+            const prod = await Producto.findByPk(ID_PROD);
 
-                    const datosEnv = {
-                        Id_Detalle: Id_Detalle,
-                        Id_Enc_FK: ENC_ID,
-                        Id_Prod_Fk: det.Id_Prod,
-                        cantidad: det.cantidad,
-                        Precio_U: det.Precio_U
+            if (!prod) {
+                return response(res, 404, 404, "Product not found");
+            }
+            const Id_Detalle = uniqid();
+
+            const datosEnv = {
+                Id_Detalle: Id_Detalle,
+                Id_Enc_FK: ENC_ID,
+                Id_Prod_Fk: ID_PROD,
+                cantidad: CANTIDAD,
+                Precio_U: PRECIO_U
+            }
+            await detalle.create(datosEnv, { transaction: transaction })
+
+            let exist = await existencias.findOne({ where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID } })
+            let lote = await lotes.findByPk(LOTE_ID)
+            if (!exist || !lote) {
+                return response(res, 404, 404, 'Product is not registered in inventory or lote dont exist')
+
+            } else {
+                exist = exist.dataValues;
+
+                if (TIPO_ENCABE == "1") { // Compra: agregamos cantidad del producto a la existencia y al inventario
+
+                    // Actualizar existencias
+                    await existencias.update(
+                        { CANT_PROD: connection.literal(`CANT_PROD + ${CANTIDAD}`) }, // Utilizamos sequelize.literal para realizar una suma
+                        { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
+                    );
+
+
+                    // Actualizar inventario
+                    const updatedInventoryRows = await Inventarios.update(
+                        { CANT_TOTAL: connection.literal(`CANT_TOTAL + ${CANTIDAD}`) },
+                        { where: { INV_ID: exist.INV_ID_FK }, transaction: transaction }
+                    );
+
+
+                    if (updatedInventoryRows[0] === 1) {
+                        await transaction.commit();
+                        response(res, 200)
+
+                    } else {
+                        await transaction.rollback();
+
                     }
-                    await detalle.create(datosEnv, { transaction })
+                } else {
+
+                    // Actualizar existencias
+                    await existencias.update(
+                        { CANT_PROD: connection.literal(`CANT_PROD - ${CANTIDAD}`) },
+                        { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
+                    );
+
+
+                    // Actualizar inventario
+                    const updatedInventoryRows = await Inventarios.update(
+                        { CANT_TOTAL: connection.literal(`CANT_TOTAL - ${CANTIDAD}`) },
+                        { where: { INV_ID: exist.INV_ID_FK }, transaction: transaction }
+                    );
+
+
+                    if (updatedInventoryRows[0] === 1) {
+                        await transaction.commit();
+                        response(res, 200)
+                    } else {
+                        await transaction.rollback();
+                    }
+
                 }
+            }
 
-            }))
 
-            await transaction.commit()
 
-            response(res, 200)
-
-            // if (encabezado) {
-            //     
-            // } else {
-            //     response(res, 500, 500, "Error creating")
-            // }
         } else {
 
             response(res, 404, 404, "User not found");
@@ -153,8 +205,6 @@ export const createCompra_Venta = async (req, res) => {
         if (transaction) await transaction.rollback();
         console.error('Error al agregar datos:', err);
     }
-
-
 
 }
 

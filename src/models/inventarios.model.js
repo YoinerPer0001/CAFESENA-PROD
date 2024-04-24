@@ -29,7 +29,7 @@ const Inventarios = connection.define('inventario', {
   }
 });
 
-Inventarios.hasMany(existencias, { foreignKey: 'PROD_ID_FK', targetKey: 'PROD_ID'})
-existencias.belongsTo(Inventarios, { foreignKey: 'PROD_ID_FK' })
+Inventarios.hasMany(existencias, { foreignKey: 'INV_ID_FK', targetKey: 'INV_ID'})
+existencias.belongsTo(Inventarios, { foreignKey: 'INV_ID_FK' })
 
 export default Inventarios;

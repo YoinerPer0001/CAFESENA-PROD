@@ -64,6 +64,12 @@ CREATE TABLE `detalles` (
 
 /*Data for the table `detalles` */
 
+insert  into `detalles`(`Id_Detalle`,`Id_Enc_FK`,`cantidad`,`Precio_U`,`total`,`Id_Prod_Fk`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
+('erxyjd40lvd1itnt','erxyjd40lvd1itmf',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-23 23:51:56','2024-04-23 23:51:56'),
+('erxyjd8pclvd1gyop','erxyjd8pclvd1gyna',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-23 23:50:29','2024-04-23 23:50:29'),
+('erxyjd93klvd2m5wp','erxyjd93klvd2m5vm',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-24 00:22:32','2024-04-24 00:22:32'),
+('erxyjd93klvd2nroe','erxyjd93klvd2nrnh',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-24 00:23:46','2024-04-24 00:23:46');
+
 /*Table structure for table `encabezados` */
 
 DROP TABLE IF EXISTS `encabezados`;
@@ -86,13 +92,10 @@ CREATE TABLE `encabezados` (
 /*Data for the table `encabezados` */
 
 insert  into `encabezados`(`ENC_ID`,`FECH_ENC`,`MET_PAGO`,`TOTAL`,`ID_USER_FK`,`TIPO_ENCABE`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
-('1','2024-04-19','2',3424324.00,'erxyjd1aclv5t60t8','1',0,'2024-04-19 17:53:53','2024-04-21 02:43:12'),
-('erxyjd5swlv7aexs6','2024-04-19','1',12332.00,'erxyjd1aclv5t60t8','1',0,'2024-04-19 23:14:14','2024-04-19 23:14:14'),
-('erxyjd9dclv8x1nhf','2024-04-21','1',12332.00,'erxyjd1aclv5t60t8','1',1,'2024-04-21 02:35:32','2024-04-21 02:35:32'),
-('erxyjd9dclv8x1yql','2024-04-21','1',12332.00,'erxyjd1aclv5t60t8','1',1,'2024-04-21 02:35:46','2024-04-21 02:35:46'),
-('erxyjd9dclv8x25xr','2024-04-21','1',111111.00,'erxyjd1aclv5t60t8','1',1,'2024-04-21 02:35:56','2024-04-21 02:35:56'),
-('erxyjd9gglv7a73kj','2024-04-19','1',12332.00,'erxyjd1aclv5t60t8','1',0,'2024-04-19 23:08:09','2024-04-19 23:08:09'),
-('hle1ff8eolvb4cqld','2024-04-22','1',111111.00,'hle1ffd7wlvb3m6ud','1',1,'2024-04-22 15:35:39','2024-04-22 15:35:39');
+('erxyjd40lvd1itmf','2024-04-23','1',111111.00,'erxyjd1aclv5t60t8','2',1,'2024-04-23 23:51:56','2024-04-23 23:51:56'),
+('erxyjd8pclvd1gyna','2024-04-23','1',111111.00,'erxyjd1aclv5t60t8','1',1,'2024-04-23 23:50:29','2024-04-23 23:50:29'),
+('erxyjd93klvd2m5vm','2024-04-24','1',111111.00,'erxyjd1aclv5t60t8','2',1,'2024-04-24 00:22:32','2024-04-24 00:22:32'),
+('erxyjd93klvd2nrnh','2024-04-24','1',111111.00,'erxyjd1aclv5t60t8','1',1,'2024-04-24 00:23:46','2024-04-24 00:23:46');
 
 /*Table structure for table `existencias` */
 
@@ -119,7 +122,7 @@ CREATE TABLE `existencias` (
 /*Data for the table `existencias` */
 
 insert  into `existencias`(`EX_ID`,`PRO_ID_FK`,`INV_ID_FK`,`ESTADO_REGISTRO`,`ID_LOTE_FK`,`CANT_PROD`,`createdAt`,`updatedAt`) values 
-(3,'erxyjd2e0lvcz71qg','1',1,'1333',0,'2024-04-23 22:46:48','2024-04-23 22:46:48');
+(3,'erxyjd2e0lvcz71qg','1',1,'1333',0,'2024-04-23 22:46:48','2024-04-24 00:23:46');
 
 /*Table structure for table `facturas` */
 
@@ -140,10 +143,6 @@ CREATE TABLE `facturas` (
 
 /*Data for the table `facturas` */
 
-insert  into `facturas`(`FACT_ID`,`FACT_FECH`,`ID_EMPLEADO`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
-('1','2024-04-25','erxyjd1aclv5t60t8',0,'2024-04-19 20:26:25','2024-04-21 01:53:20'),
-('erxyjd5swlv7aexs6','2024-04-20','hle1ffcmolul8uo6n',1,'2024-04-20 03:42:54','2024-04-20 03:42:54');
-
 /*Table structure for table `inventarios` */
 
 DROP TABLE IF EXISTS `inventarios`;
@@ -161,7 +160,7 @@ CREATE TABLE `inventarios` (
 /*Data for the table `inventarios` */
 
 insert  into `inventarios`(`INV_ID`,`CANT_TOTAL`,`INV_EST`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
-('1',0,'S',1,'2024-04-23 16:39:46','2024-04-23 16:39:48');
+('1',0,'S',1,'2024-04-23 16:39:46','2024-04-24 00:23:46');
 
 /*Table structure for table `localizacions` */
 
