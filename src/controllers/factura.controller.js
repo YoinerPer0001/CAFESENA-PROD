@@ -210,28 +210,34 @@ export const updateFactura = async (req, res) => {
     }
 }
 
-export const deleteFact = async (req, res, ) => {
+export const deleteFactura = async (req, res) => {
     try {
         const { id } = req.params;
-        const fact = await factura.findByPk(id)
-        if (!fact) {
-            return response(res, 404, 404, 'invoise not found');
+        const data = await factura.findByPk(id)
+        if (!data) {
+            return response(res, 404, 404, 'Factura not found')
         } else {
-            
-            const deleted = await factura.update({ESTADO_REGISTRO: 0}, {where: {FACT_ID: id}})
+            const facturaUsuario = await Usuario.findOne({ where: { Id_User: data.ID_EMPLEADO } })
+            const facturaEncabezado = await Encabezados.findOne({ where: { ENC_ID: data.FACT_ID } })
+            if (!facturaUsuario || !facturaEncabezado) {
+               return response(res, 403, 403, 'You cannot delete this factura because it is linked to a non-existing user or encabezado')
+            } else {
+                const deleteFactura = await factura.update(
+                    { ESTADO_REGISTRO: false },
+                    {
+                        where: { FACT_ID: id }
+                    })
 
-            if(deleted){
-                response(res, 200);
-            }else{
-                response(res, 500, 500, 'Error Deleting');
+                if (deleteFactura) {
+                    return response(res, 200, 200, 'Factura deleted successfully')
+                } else {
+                    return response(res, 500, 500, 'Error deleting factura')
+                }
             }
         }
-        
     } catch (err) {
         response(res, 500, 500, err);
     }
-    
 }
-
 
 

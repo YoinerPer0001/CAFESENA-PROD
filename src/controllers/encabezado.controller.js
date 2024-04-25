@@ -5,7 +5,7 @@ import { response } from "../utils/responses.js";
 import { Encabezados } from "../models/encabezado.model.js";
 import Usuario from "../models/users.model.js";
 import Producto from "../models/productos.models.js";
-
+import detalle from '../models/detalles.model.js';
 
 //obtiene encabezados 
 export const GetAll = async (req, res) => {
@@ -189,25 +189,32 @@ export const UpdateEncabezado = async (req, res) => {
 }
 
 
-export const deleteEnc = async (req, res, ) => {
+export const deleteEncabezado = async (req, res) => {
     try {
         const { id } = req.params;
-        const enc = await Encabezados.findByPk(id)
-        if (!enc) {
-            response(res, 404, 404, 'header not found');
+        const data = await Encabezados.findByPk(id)
+        if (!data) {
+            return response(res, 404, 404, 'Encabezado not found')
         } else {
-            
-            const deleted = await Encabezados.update({ESTADO_REGISTRO: 0}, {where: {ENC_ID: id}})
+            const encabezadoUsuario = await Usuario.findOne({ where: { Id_User: data.ID_USER_FK } })
+            const encabezadoDetalles = await detalle.findAll({ where: { Id_Enc_FK: id } })
+            if (!encabezadoUsuario || encabezadoDetalles.length > 0) {
+               return response(res, 403, 403, 'You cannot delete this encabezado because it is linked to a non-existing user or it has detalles')
+            } else {
+                const deleteEncabezado = await Encabezados.update(
+                    { ESTADO_REGISTRO: false },
+                    {
+                        where: { ENC_ID: id }
+                    })
 
-            if(deleted){
-                response(res, 200, 200);
-            }else{
-                response(res, 500, 500, 'Error Deleting');
+                if (deleteEncabezado) {
+                    return response(res, 200, 200, 'Encabezado deleted successfully')
+                } else {
+                    return response(res, 500, 500, 'Error deleting encabezado')
+                }
             }
         }
-        
     } catch (err) {
         response(res, 500, 500, err);
     }
-    
 }

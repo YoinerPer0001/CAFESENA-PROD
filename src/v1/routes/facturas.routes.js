@@ -1,5 +1,5 @@
 import express from "express";
-import {getFacturas, getFacturasxId, createFactura, updateFactura, deleteFact} from "../../controllers/factura.controller.js";
+import {getFacturas, getFacturasxId, createFactura, updateFactura, deleteFactura} from "../../controllers/factura.controller.js";
 import { verifyToken } from "../../middlewares/verifyToken.js";
 import { AdminEmplPermissions, adminPermiso } from '../../middlewares/managePermissions.js'
 import { validateCreate, validateUpdate } from "../../validators/facturas.validator.js";
@@ -15,7 +15,7 @@ routesFacturas.post('/api/v1/invoices/create',verifyToken, validateCreate, creat
 
 routesFacturas.put('/api/v1/invoices/update/:id',verifyToken,validateUpdate, AdminEmplPermissions, updateFactura)
 
-routesFacturas.delete('/api/v1/invoices/delete/:id',verifyToken, adminPermiso, deleteFact)
+routesFacturas.delete('/api/v1/invoices/delete/:id',verifyToken, adminPermiso, deleteFactura)
 
 export default routesFacturas;
 

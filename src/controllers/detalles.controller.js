@@ -199,25 +199,32 @@ export const UpdateDetalle = async (req, res) => {
     }
 }
 
-export const deleteDet = async (req, res, ) => {
+export const deleteDetalle = async (req, res) => {
     try {
         const { id } = req.params;
-        const det = await detalle.findByPk(id)
-        if (!det) {
-            response(res, 404, 404, 'detail not found');
+        const data = await detalle.findByPk(id)
+        if (!data) {
+            return response(res, 404, 404, 'Detalle not found')
         } else {
-            
-            const deleted = await detalle.update({ESTADO_REGISTRO: 0}, {where: {Id_Detalle: id}})
+            const detalleProducto = await Producto.findOne({ where: { PROD_ID: data.Id_Prod_Fk } })
+            const detalleEncabezado = await Encabezados.findOne({ where: { ENC_ID : data.Id_Enc_FK } })
+            if (!detalleProducto || !detalleEncabezado) {
+               return response(res, 403, 403, 'You cannot delete this detalle because it is linked to a non-existing product or encabezado')
+            } else {
+                const deleteDetalle = await detalle.update(
+                    { ESTADO_REGISTRO: false },
+                    {
+                        where: { Id_Detalle: id }
+                    })
 
-            if(deleted){
-                response(res, 200, 200);
-            }else{
-                response(res, 500, 500, 'Error Deleting');
+                if (deleteDetalle) {
+                    return response(res, 200, 200, 'Detalle deleted successfully')
+                } else {
+                    return response(res, 500, 500, 'Error deleting detalle')
+                }
             }
         }
-        
     } catch (err) {
         response(res, 500, 500, err);
     }
-    
 }

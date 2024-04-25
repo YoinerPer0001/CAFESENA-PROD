@@ -110,3 +110,34 @@ export const updateLote = async (req, res) => {
         response(res, 500, 500, err);
     }
 }
+
+
+
+export const deleteLote = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await lotes.findByPk(id)
+        if (!data) {
+            return response(res, 404, 404, 'Lote not found')
+        } else {
+            const existencia = await existencias.findAll({ where: { ID_LOTE_FK: id } })
+            if (existencia.length > 0) {
+               return response(res, 403, 403, 'You cannot delete this lote because it has existencias')
+            } else {
+                const borrarLote = await lotes.update(
+                    { ESTADO_REGISTRO: false },
+                    {
+                        where: { ID_LOTE: id }
+                    })
+
+                if (borrarLote) {
+                    return response(res, 200, 200, 'Lote deleted successfully')
+                } else {
+                    return response(res, 500, 500, 'Error deleting lote')
+                }
+            }
+        }
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+}

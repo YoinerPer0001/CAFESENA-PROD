@@ -225,6 +225,10 @@ export const createCompra_Venta = async (req, res) => {
 }
 
 
+export const deleteCompras = () => {
+
+}
+
 
 
 
