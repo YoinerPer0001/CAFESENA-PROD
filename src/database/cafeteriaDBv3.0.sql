@@ -66,6 +66,7 @@ CREATE TABLE `detalles` (
 
 insert  into `detalles`(`Id_Detalle`,`Id_Enc_FK`,`cantidad`,`Precio_U`,`total`,`Id_Prod_Fk`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
 ('erxyjd40lvd1itnt','erxyjd40lvd1itmf',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-23 23:51:56','2024-04-23 23:51:56'),
+('erxyjd654lvea62ee','erxyjd654lvea62dw',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-24 20:41:44','2024-04-24 20:41:44'),
 ('erxyjd8pclvd1gyop','erxyjd8pclvd1gyna',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-23 23:50:29','2024-04-23 23:50:29'),
 ('erxyjd93klvd2m5wp','erxyjd93klvd2m5vm',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-24 00:22:32','2024-04-24 00:22:32'),
 ('erxyjd93klvd2nroe','erxyjd93klvd2nrnh',2,1300.00,NULL,'erxyjd2e0lvcz71qg',1,'2024-04-24 00:23:46','2024-04-24 00:23:46');
@@ -93,6 +94,7 @@ CREATE TABLE `encabezados` (
 
 insert  into `encabezados`(`ENC_ID`,`FECH_ENC`,`MET_PAGO`,`TOTAL`,`ID_USER_FK`,`TIPO_ENCABE`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
 ('erxyjd40lvd1itmf','2024-04-23','1',111111.00,'erxyjd1aclv5t60t8','2',1,'2024-04-23 23:51:56','2024-04-23 23:51:56'),
+('erxyjd654lvea62dw','2024-04-24','1',111111.00,'erxyjd1aclv5t60t8','1',1,'2024-04-24 20:41:44','2024-04-24 20:41:44'),
 ('erxyjd8pclvd1gyna','2024-04-23','1',111111.00,'erxyjd1aclv5t60t8','1',1,'2024-04-23 23:50:29','2024-04-23 23:50:29'),
 ('erxyjd93klvd2m5vm','2024-04-24','1',111111.00,'erxyjd1aclv5t60t8','2',1,'2024-04-24 00:22:32','2024-04-24 00:22:32'),
 ('erxyjd93klvd2nrnh','2024-04-24','1',111111.00,'erxyjd1aclv5t60t8','1',1,'2024-04-24 00:23:46','2024-04-24 00:23:46');
@@ -122,7 +124,7 @@ CREATE TABLE `existencias` (
 /*Data for the table `existencias` */
 
 insert  into `existencias`(`EX_ID`,`PRO_ID_FK`,`INV_ID_FK`,`ESTADO_REGISTRO`,`ID_LOTE_FK`,`CANT_PROD`,`createdAt`,`updatedAt`) values 
-(3,'erxyjd2e0lvcz71qg','1',1,'1333',0,'2024-04-23 22:46:48','2024-04-24 00:23:46');
+(3,'erxyjd2e0lvcz71qg','1',1,'1333',1,'2024-04-23 22:46:48','2024-04-25 03:46:25');
 
 /*Table structure for table `facturas` */
 
@@ -163,7 +165,7 @@ CREATE TABLE `inventarios` (
 /*Data for the table `inventarios` */
 
 insert  into `inventarios`(`INV_ID`,`CANT_TOTAL`,`INV_EST`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
-('1',0,'S',1,'2024-04-23 16:39:46','2024-04-24 00:23:46');
+('1',1,'S',1,'2024-04-23 16:39:46','2024-04-25 03:46:25');
 
 /*Table structure for table `localizacions` */
 
@@ -201,8 +203,8 @@ DROP TABLE IF EXISTS `lotes`;
 CREATE TABLE `lotes` (
   `ID_LOTE` varchar(100) NOT NULL,
   `COD_LOTE` varchar(100) NOT NULL,
-  `FEC_REC` datetime NOT NULL,
-  `FEC_VENC` datetime NOT NULL,
+  `FEC_REC` date NOT NULL,
+  `FEC_VENC` date NOT NULL,
   `ESTADO_REGISTRO` int(1) NOT NULL,
   `createdAt` datetime DEFAULT NULL,
   `updatedAt` datetime DEFAULT NULL,
@@ -212,7 +214,7 @@ CREATE TABLE `lotes` (
 /*Data for the table `lotes` */
 
 insert  into `lotes`(`ID_LOTE`,`COD_LOTE`,`FEC_REC`,`FEC_VENC`,`ESTADO_REGISTRO`,`createdAt`,`updatedAt`) values 
-('1333','2233','2024-04-23 16:58:42','2024-04-27 16:58:44',1,NULL,NULL);
+('1333','2233','2024-04-23','2024-04-27',1,NULL,NULL);
 
 /*Table structure for table `productos` */
 
@@ -320,7 +322,7 @@ CREATE TABLE `tokens` (
   PRIMARY KEY (`Id_Token`),
   KEY `Usuario_Id` (`User_Id_FK`),
   CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`User_Id_FK`) REFERENCES `usuarios` (`Id_User`)
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 /*Data for the table `tokens` */
 
@@ -358,7 +360,16 @@ insert  into `tokens`(`Id_Token`,`Token`,`Fec_Caducidad`,`User_Id_FK`,`Tipo_toke
 (55,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTAwNjYxLCJleHAiOjE3MTM5ODcwNjF9.NpIgiDPEJb8DgmvV4TjiJ9c_r451qjLkCkAtbefWMus','1713987061','hle1ffcmolul8uo6n','2',1,'2024-04-23 19:31:01','2024-04-23 19:31:01'),
 (56,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTg3MTQ2LCJleHAiOjE3MTQwNzM1NDZ9.XfkvACVHc_CwQN-uamntfPP1szYnr9rQa85ZDvQFGZA','1714073546','hle1ffcmolul8uo6n','2',1,'2024-04-24 19:32:26','2024-04-24 19:32:26'),
 (57,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTg3MTcyLCJleHAiOjE3MTQwNzM1NzJ9.ZftPYMz0VZvG0bxcD6Kdc8YwMhEecBJN9NyZ1_kUwm8','1714073572','hle1ffcmolul8uo6n','2',0,'2024-04-24 19:32:52','2024-04-24 20:11:20'),
-(58,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTkwMjc5LCJleHAiOjE3MTQwNzY2Nzl9.yVP47GifOooUQaPz5d_RNpZ8vi-Sd0wde-qGC_CsjHA','1714076679','hle1ffcmolul8uo6n','2',0,'2024-04-24 20:24:39','2024-04-24 20:24:58');
+(58,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTkwMjc5LCJleHAiOjE3MTQwNzY2Nzl9.yVP47GifOooUQaPz5d_RNpZ8vi-Sd0wde-qGC_CsjHA','1714076679','hle1ffcmolul8uo6n','2',0,'2024-04-24 20:24:39','2024-04-24 20:24:58'),
+(59,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzEzOTkxMjkxLCJleHAiOjE3MTQwNzc2OTF9.LCGOK4_h_6_kv5ayEh1pNcaM_ooqp2OAVj7ZHPiY-gU','1714077691','hle1ffcmolul8uo6n','2',1,'2024-04-24 20:41:31','2024-04-24 20:41:31'),
+(60,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7IklkX1VzZXIiOiJobGUxZmZjbW9sdWw4dW82biIsIk5vbV9Vc2VyIjoicGV0cm8iLCJBcGVfVXNlciI6InBlcmV6IiwiRW1hX1VzZXIiOiJ5b2luZXJwZXJ0dXpAZ21haWwuY29tIiwiSWRfUm9sX0ZLIjoxfSwiaWF0IjoxNzE0MDA5MjMzLCJleHAiOjE3MTQwOTU2MzN9.wFtFu51YqAKBeIxsMbAkUuU_hMMTE7K2CKtfPtYx0PU','1714095633','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:40:33','2024-04-25 01:40:33'),
+(61,'611454','1714009845','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:40:45','2024-04-25 01:40:45'),
+(62,'285259','1714010045','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:44:05','2024-04-25 01:44:05'),
+(63,'352861','1714010061','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:44:21','2024-04-25 01:44:21'),
+(64,'430024','1714010075','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:44:35','2024-04-25 01:44:35'),
+(65,'592666','1714010306','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:48:26','2024-04-25 01:48:26'),
+(66,'249663','1714010368','hle1ffcmolul8uo6n','2',1,'2024-04-25 01:49:28','2024-04-25 01:49:28'),
+(67,'837660','1714010385','erxyjd7qclv8xqy8e','2',1,'2024-04-25 01:49:45','2024-04-25 01:49:45');
 
 /*Table structure for table `usuarios` */
 
@@ -389,7 +400,7 @@ insert  into `usuarios`(`Id_User`,`Nom_User`,`Ape_User`,`Tel_User`,`Ema_User`,`P
 ('erxyjd1aclv5t60t8','Wiro','De avila','3004445577','cr7@gmail.com','$2b$10$06bglGa1ntkEdgsp9UV4Gejkc72Wm.XLZ9qWGAD3ZrtfXq3irIN0q',3,'3004445577',0,0,'2024-04-18 22:23:39','2024-04-21 02:59:59'),
 ('erxyjd7a4lv603r9h','Jairo','De avila',NULL,'josecortesandrade41@gmail.com','$2b$10$B18zG/zCfjMjEjM.bGgzhur2y.AKNiUHjnW02Q6q4gRN9yN.37JFy',4,NULL,1,1,'2024-04-19 01:37:50','2024-04-20 23:16:25'),
 ('erxyjd7qclv8xqy8e','Antonio','Pertuz',NULL,'antoniopertuzchiquillo53@gmail.com','$2b$10$kDMWN8dEwwf65hZDXzXc7uXNuwF3nlDwF4/50bLGlTxphxU./J0ri',3,NULL,0,1,'2024-04-21 02:55:12','2024-04-21 02:55:12'),
-('hle1ffcmolul8uo6n','petro','perez',NULL,'yoinerpertuz@gmail.com','$2b$10$vK83JCqzwie8eda4lwaxw.cL2TNsAdWzR9mbfnOlZ/z9vkv3/OhV6',1,NULL,0,1,'2024-04-04 12:59:33','2024-04-04 12:59:33'),
+('hle1ffcmolul8uo6n','petro','perez',NULL,'syoinerpertuz@gmail.com','$2b$10$vK83JCqzwie8eda4lwaxw.cL2TNsAdWzR9mbfnOlZ/z9vkv3/OhV6',1,NULL,0,1,'2024-04-04 12:59:33','2024-04-04 12:59:33'),
 ('hle1ffd7wlvb3m6ud','Andres','De avila',NULL,'andrescavadiaaa@gmail.com','$2b$10$.dlYJTJw4awOyndtvJotQuQ6xkk3E0kfNelMNGW50JgbXX/28Pq5e',3,NULL,1,1,'2024-04-22 15:15:00','2024-04-22 15:16:09');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
