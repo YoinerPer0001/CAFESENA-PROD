@@ -217,10 +217,10 @@ export const deleteFactura = async (req, res) => {
         if (!data) {
             return response(res, 404, 404, 'Factura not found')
         } else {
-            const facturaUsuario = await Usuario.findOne({ where: { Id_User: data.ID_EMPLEADO } })
             const facturaEncabezado = await Encabezados.findOne({ where: { ENC_ID: data.FACT_ID } })
-            if (!facturaUsuario || !facturaEncabezado) {
-               return response(res, 403, 403, 'You cannot delete this factura because it is linked to a non-existing user or encabezado')
+
+            if (facturaEncabezado) {
+               return response(res, 403, 403, 'You cannot delete this invoise, because has headers associated')
             } else {
                 const deleteFactura = await factura.update(
                     { ESTADO_REGISTRO: false },

@@ -37,7 +37,7 @@ export const GetDetxId = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const compra = await detalle.findByPk(id, 
+        const compra = await detalle.findByPk(id,
             { attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] } })
 
         if (compra) {
@@ -178,7 +178,7 @@ export const UpdateDetalle = async (req, res) => {
                 Precio_U: datos.Precio_U || detail.Precio_U,
                 ESTADO_REGISTRO: datos.ESTADO_REGISTRO || detail.ESTADO_REGISTRO
             }
-          
+
 
             const updated = await detalle.update(datosEnv, { where: { Id_Detalle: id } })
 
@@ -204,27 +204,23 @@ export const deleteDetalle = async (req, res) => {
         const { id } = req.params;
         const data = await detalle.findByPk(id)
         if (!data) {
-            return response(res, 404, 404, 'Detalle not found')
+            return response(res, 404, 404, 'Detail not found')
         } else {
-            const detalleProducto = await Producto.findOne({ where: { PROD_ID: data.Id_Prod_Fk } })
-            const detalleEncabezado = await Encabezados.findOne({ where: { ENC_ID : data.Id_Enc_FK } })
-            if (!detalleProducto || !detalleEncabezado) {
-               return response(res, 403, 403, 'You cannot delete this detalle because it is linked to a non-existing product or encabezado')
-            } else {
-                const deleteDetalle = await detalle.update(
-                    { ESTADO_REGISTRO: false },
-                    {
-                        where: { Id_Detalle: id }
-                    })
 
-                if (deleteDetalle) {
-                    return response(res, 200, 200, 'Detalle deleted successfully')
-                } else {
-                    return response(res, 500, 500, 'Error deleting detalle')
-                }
+            const deleteDetalle = await detalle.update(
+                { ESTADO_REGISTRO: false },
+                {
+                    where: { Id_Detalle: id }
+                })
+
+            if (deleteDetalle) {
+                return response(res, 200, 200, 'Detail deleted successfully')
+            } else {
+                return response(res, 500, 500, 'Error deleting detail')
             }
         }
-    } catch (err) {
-        response(res, 500, 500, err);
+
+        } catch (err) {
+            response(res, 500, 500, err);
+        }
     }
-}

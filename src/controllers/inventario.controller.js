@@ -182,7 +182,7 @@ export const deleteInv = async (req, res) => {
         } else {
             const existencia = await existencias.findAll({ where: { INV_ID_FK: id } })
             if (existencia) {
-                return response(res, 403, 403, 'You cannot delete this inventory because it has existens associated')
+                return response(res, 403, 403, 'You cannot delete this inventory because it has stok associated')
             } else {
                 const borrar = Inventarios.update(
                     { ESTADO_REGISTRO: false },

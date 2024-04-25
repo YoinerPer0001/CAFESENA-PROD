@@ -61,7 +61,7 @@ export const createRoles = async (req, res) => {
 
         if (rolExists) {
 
-           return response(res, 409, 409, "rol already exist");
+            return response(res, 409, 409, "rol already exist");
 
         } else {
 
@@ -150,18 +150,23 @@ export const deleteRol = async (req, res) => {
 
         } else {
 
-            const responses = await Role.update({ ESTADO_REGISTRO: 0 }, { where: { Id_Rol: id } })
-            if (responses) {
+            //verificamos que no tenga usuarios asociados
+            const usuarios = await Usuario.findAll({ where: { Id_Rol_FK: id } })
 
-                const changeRolUser = await Usuario.update({Id_Rol_FK: 4},{where: {Id_Rol_FK: id}})
-                if (changeRolUser) {
+            if (usuarios) {
+                return response(res, 403, 403, "You cannot delete this rol, because has users associated")
+            } else {
+
+                const responses = await Role.update({ ESTADO_REGISTRO: false }, { where: { Id_Rol: id } })
+                if (responses) {
                     response(res, 200)
                 } else {
                     response(res, 500, 500, "Error Deleting")
                 }
-            } else {
-                response(res, 500, 500, "Error Deleting")
+
             }
+
+           
 
         }
 

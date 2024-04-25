@@ -6,6 +6,7 @@ import { Encabezados } from "../models/encabezado.model.js";
 import Usuario from "../models/users.model.js";
 import Producto from "../models/productos.models.js";
 import detalle from '../models/detalles.model.js';
+import factura from "../models/factura.model.js";
 
 //obtiene encabezados 
 export const GetAll = async (req, res) => {
@@ -194,12 +195,13 @@ export const deleteEncabezado = async (req, res) => {
         const { id } = req.params;
         const data = await Encabezados.findByPk(id)
         if (!data) {
-            return response(res, 404, 404, 'Encabezado not found')
+            return response(res, 404, 404, 'Header not found')
         } else {
-            const encabezadoUsuario = await Usuario.findOne({ where: { Id_User: data.ID_USER_FK } })
+
             const encabezadoDetalles = await detalle.findAll({ where: { Id_Enc_FK: id } })
-            if (!encabezadoUsuario || encabezadoDetalles.length > 0) {
-               return response(res, 403, 403, 'You cannot delete this encabezado because it is linked to a non-existing user or it has detalles')
+            const Factura = await factura.findByPk(id);
+            if (encabezadoDetalles || Factura) {
+               return response(res, 403, 403, 'You cannot delete this encabezado because has details or invoices associated')
             } else {
                 const deleteEncabezado = await Encabezados.update(
                     { ESTADO_REGISTRO: false },
@@ -208,9 +210,9 @@ export const deleteEncabezado = async (req, res) => {
                     })
 
                 if (deleteEncabezado) {
-                    return response(res, 200, 200, 'Encabezado deleted successfully')
+                    return response(res, 200, 200, 'header deleted successfully')
                 } else {
-                    return response(res, 500, 500, 'Error deleting encabezado')
+                    return response(res, 500, 500, 'Error deleting header')
                 }
             }
         }

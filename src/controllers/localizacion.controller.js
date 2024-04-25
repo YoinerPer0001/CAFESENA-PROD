@@ -194,7 +194,7 @@ export const deleteLoc = async (req, res,) => {
             response(res, 404, 404, 'location not found');
         } else {
 
-            const deleted = await Localizacion.update({ ESTADO_REGISTRO: 0 }, { where: { Id_Loc: id } })
+            const deleted = await Localizacion.update({ ESTADO_REGISTRO: false }, { where: { Id_Loc: id } })
 
             if (deleted) {
                 response(res, 200, 200);

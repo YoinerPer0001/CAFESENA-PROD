@@ -6,6 +6,7 @@ import Token from "../models/tokens.model.js";
 import Usuario from "../models/users.model.js";
 import { TokenDb } from "./users.controller.js";
 import { GenCodigosTemp } from "../utils/GenCodTemp.js";
+import { SendCode } from "../utils/Emailmessages/SendCodVerification.js";
 const jwt = jsonwebtoken;
 
 export const GetAllTokens = async (req, res) => {
@@ -141,12 +142,18 @@ export const InsertToken = async (req, res) => {
                     User_Id_FK: Id_User,
                     Tipo_token: Tipo_token
                 }
+
+
             }
 
 
 
             const newToken = await Token.create(datosEnv);
             if (newToken) {
+                //enviamos mensaje al usuario
+                if(Tipo_token != 1){
+                    SendCode(user.Ema_User, user.Nom_User,datosEnv.Token)
+                }
                 response(res, 200);
             } else {
                 response(res, 500, 500, "error creating token");
@@ -242,7 +249,7 @@ export const deleteTok = async (req, res, ) => {
         if (!token) {
             response(res, 404, 404, 'token not found');
         } else {
-            
+           
             const deleted = await Token.update({ESTADO_REGISTRO: 0}, {where: {Id_Token: id}})
 
             if(deleted){
