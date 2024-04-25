@@ -12,9 +12,9 @@ export const getProveedor = async (req, res) => {
     try {
 
         const data = await Proveedor.findAll({
-             attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
-             where: {ESTADO_REGISTRO: 1}
-             })
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+            where: { ESTADO_REGISTRO: 1 }
+        })
         if (data) {
             response(res, 200, 200, data);
         }
@@ -134,18 +134,25 @@ export const deleteProveedor = async (req, res) => {
         if (!Prov) {
             return response(res, 404, 404, 'Provider not found');
         } else {
-            
-            const deleted = await Proveedor.update({ESTADO_REGISTRO: 0}, {where: {PROV_ID: id}})
 
-            if(deleted){
-                response(res, 200, 200);
-            }else{
-                response(res, 500, 500, 'Error Deleting');
+            const proveedores = await proveedor_producto.findAll({ where: { Id_Prov_FK: id } })
+
+            if (proveedores) {
+                return response(res, 403, 403, "You cannot delete this provider, because has products associated")
+            } else {
+                const deleted = await Proveedor.update({ ESTADO_REGISTRO: 0 }, { where: { PROV_ID: id } })
+
+                if (deleted) {
+                    response(res, 200, 200);
+                } else {
+                    response(res, 500, 500, 'Error Deleting');
+                }
             }
+
         }
-        
+
     } catch (err) {
         response(res, 500, 500, err);
     }
- 
+
 }

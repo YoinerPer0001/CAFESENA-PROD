@@ -121,8 +121,8 @@ export const deleteLote = async (req, res) => {
             return response(res, 404, 404, 'Lote not found')
         } else {
             const existencia = await existencias.findAll({ where: { ID_LOTE_FK: id } })
-            if (existencia.length > 0) {
-               return response(res, 403, 403, 'You cannot delete this lote because it has existencias')
+            if (existencia) {
+               return response(res, 403, 403, 'You cannot delete this lote because has stock associated')
             } else {
                 const borrarLote = await lotes.update(
                     { ESTADO_REGISTRO: false },
