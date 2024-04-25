@@ -16,7 +16,6 @@ export const validateLoteCreate = [
 
 export const validateLoteUpdate = [
     check('COD_LOTE').optional().not().isEmpty().withMessage('COD_LOTE cannot be empty').isString().withMessage('COD_LOTE must be a string value'),
-    check('FEC_REC').optional().not().isEmpty().withMessage('FEC_REC cannot be empty').isDate().withMessage('FEC_REC must be a date value'),
     check('FEC_REC').optional().isString().withMessage('FEC_REC must be a string')
         .not().isEmpty().withMessage('FEC_REC cannot be empty')
         .isISO8601().toDate().withMessage('FEC_REC must be a date'),

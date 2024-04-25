@@ -12,6 +12,7 @@ import Usuario from "../models/users.model.js";
 import 'dotenv/config'
 import Token from "../models/tokens.model.js";
 import Localizacion from "../models/localizacion.model.js";
+import factura from "../models/factura.model.js";
 
 const jwt = jsonwebtoken;
 
@@ -21,9 +22,10 @@ export const getUsers = async (req, res) => {
     try {
 
         const users = await Usuario.findAll(
-            { attributes: { exclude: ['Pass_User', 'createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
-            where:{ESTADO_REGISTRO: 1}
-         });
+            {
+                attributes: { exclude: ['Pass_User', 'createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+                where: { ESTADO_REGISTRO: 1 }
+            });
         if (users) {
             response(res, 200, 200, users);
         } else {
@@ -163,7 +165,7 @@ export const UpdateUserData = async (req, res) => {
 
                 if (user) {
                     return response(res, 409, 409, "Email is registered");
-                }else{
+                } else {
                     NewEmail = UserData.Ema_User;
                 }
             }
@@ -307,7 +309,7 @@ export const loginUser = async (req, res) => {
                     Ape_User: user.Ape_User,
                     Ema_User: user.Ema_User,
                     Id_Rol_FK: user.Id_Rol_FK,
-                    
+
                 }
 
                 //generamos token y save on db
@@ -486,51 +488,67 @@ export const TokenDb = async (userData) => {
 
 }
 
-export const deleteUser = async (req, res, ) => {
+
+export const closeSession = async (req, res) => {
+    try {
+        const token = req.token;
+
+        if (!token) {
+            response(res, 401, 401, 'No token provided');
+        } else {
+            const { user } = jwt.decode(token, process.env.SECRETWORD || "juniorTupapa");
+
+            const deleted = await Token.update({ ESTADO_REGISTRO: false }, { where: { token: token, User_Id_FK: user.Id_User, ESTADO_REGISTRO: 1 } })
+
+            if (deleted) {
+                response(res, 200, 200, 'success logout');
+            } else {
+                response(res, 500, 500, 'Error');
+            }
+        }
+
+    } catch (err) {
+        response(res, 500, 500, err);
+    }
+}
+
+
+export const deleteUser = async (req, res,) => {
     try {
         const { id } = req.params;
         const user = await Usuario.findByPk(id)
         if (!user) {
             response(res, 404, 404, 'user not found');
         } else {
-            
-            const deleted = await Usuario.update({ESTADO_REGISTRO: 0}, {where: {Id_User: id}})
 
-            if(deleted){
-                response(res, 200, 200);
+            //verificamos que no tenga tokens asociados
+            const tokens = await Token.findAll({ where: { User_Id_FK: id, ESTADO_REGISTRO: 1 } })
+            //verificamos que no tenga localizaciones asociadas
+            const locations = await Localizacion.findAll({ where: { Id_User_FK: id, ESTADO_REGISTRO: 1 } })
+            //verificamos que no tenga facturas asociadas
+            const facturas = await factura.findAll({ where: { ID_EMPLEADO: id, ESTADO_REGISTRO: 1 } })
+            //verificamos que no tenfa encabezados asociados
+            const encabezados = await encabezado.findAll({ where: { ID_USER_FK: id, ESTADO_REGISTRO: 1 } })
+
+            if (!tokens && !locations && !facturas && !encabezados) {
+                const deleted = await Usuario.update({ ESTADO_REGISTRO: 0 }, { where: { Id_User: id } })
+
+                if (deleted) {
+                    response(res, 200, 200);
+                } else {
+                    response(res, 500, 500, 'Error Deleting');
+                }
             }else{
-                response(res, 500, 500, 'Error Deleting');
+                response(res, 500, 500, 'Error Deleting, User has data associated');
             }
         }
-        
+
     } catch (err) {
         response(res, 500, 500, err);
     }
-    
+
 }
 
-export const closeSession = async (req, res) => {
-    try{
-        const token = req.token;
-
-        if(!token){
-            response(res, 401, 401, 'No token provided');
-        }else{
-            const {user} = jwt.decode(token, process.env.SECRETWORD || "juniorTupapa");
-
-            const deleted = await Token.update({ESTADO_REGISTRO: false}, {where:{token: token, User_Id_FK: user.Id_User, ESTADO_REGISTRO: 1}})
-
-            if(deleted){
-                response(res, 200, 200, 'success logout');
-            }else{
-                response(res, 500, 500, 'Error');
-            }
-        }
-
-    }catch(err){
-        response(res, 500, 500, err);
-    }
-}
 
 
 
