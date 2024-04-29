@@ -7,7 +7,7 @@ import Inventarios from "../models/inventarios.model.js";
 import { response } from "../utils/responses.js";
 import { connection } from "../database/db.js";
 import existencias from "../models/existencias.model.js";
-import { where } from "sequelize";
+import factura from "../models/factura.model.js";
 import lotes from "../models/lotes.model.js";
 
 //obtiene encabezados de un usuario x tipo
@@ -92,135 +92,131 @@ export const GetxType = async (req, res) => {
 
 //crear compras o ventas
 export const createCompra_Venta = async (req, res) => {
-
+    // ID_PROD, CANTIDAD, PRECIO_U,
     let transaction;
     try {
-        const { ID_USER, MET_PAGO, TOTAL, TIPO_ENCABE, ID_PROD, CANTIDAD, PRECIO_U, LOTE_ID } = req.body;
+        const { ID_USER, MET_PAGO, TOTAL, LISTA_PROD, TIPO_ENCABE, LOTE_ID } = req.body;
+        const datosEmpleado = req.Tokendata.user;
         const ENC_ID = uniqid();
-
+    
         const usuario = await Usuario.findByPk(ID_USER);
-
-
-        if (usuario) {
-            const data = {
-                ENC_ID: ENC_ID,
-                FECH_ENC: Date.now(),
-                MET_PAGO: MET_PAGO,
-                TOTAL: TOTAL,
-                ID_USER_FK: ID_USER,
-                TIPO_ENCABE: TIPO_ENCABE
+    
+        if (!usuario) {
+            return response(res, 404, 404, "User not found");
+        }
+    
+        const data = {
+            ENC_ID: ENC_ID,
+            FECH_ENC: Date.now(),
+            MET_PAGO: MET_PAGO,
+            TOTAL: TOTAL,
+            ID_USER_FK: ID_USER,
+            TIPO_ENCABE: TIPO_ENCABE
+        };
+    
+        transaction = await connection.transaction(); //transaccion para poder guardar valores en ambas entidades
+    
+        const encabezado = await Encabezados.create(data, { transaction: transaction });
+    
+        // Verificamos que los productos estén registrados
+        const arrProms = LISTA_PROD.map(producto => Producto.findByPk(producto.ID_PROD, { transaction: transaction }));
+    
+        const productos = await Promise.all(arrProms);
+    
+        productos.forEach(producto => {
+            if (!producto) {
+                return response(res, 404, 404, "product not found");
+                // throw new Error("Product not found");
             }
-
-            transaction = await connection.transaction(); //transaccion para poder guardar valoresn en ambas entidades
-
-
-            const encabezado = await Encabezados.create(data, { transaction: transaction })
-
-
-            //creamos los detalles asociados a el encabezado
-
-            const prod = await Producto.findByPk(ID_PROD);
-
-            if (!prod) {
-                return response(res, 404, 404, "Product not found");
-            }
-            const Id_Detalle = uniqid();
-
-            const datosEnv = {
-                Id_Detalle: Id_Detalle,
-                Id_Enc_FK: ENC_ID,
-                Id_Prod_Fk: ID_PROD,
-                cantidad: CANTIDAD,
-                Precio_U: PRECIO_U
-            }
-            await detalle.create(datosEnv, { transaction: transaction })
-
-            let exist = await existencias.findOne({ where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID } })
-            let lote = await lotes.findByPk(LOTE_ID)
-            if (!exist || !lote) {
-                return response(res, 404, 404, 'Product is not registered in inventory or lote dont exist')
-
-            } else {
-                exist = exist.dataValues;
-
-                if (TIPO_ENCABE == "1") { // Compra: agregamos cantidad del producto a la existencia y al inventario
-
-                    // Actualizar existencias
-                    await existencias.update(
-                        { CANT_PROD: connection.literal(`CANT_PROD + ${CANTIDAD}`) }, // Utilizamos sequelize.literal para realizar una suma
-                        { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
-                    );
-
-
-                    // Actualizar inventario
-                    const updatedInventoryRows = await Inventarios.update(
-                        { CANT_TOTAL: connection.literal(`CANT_TOTAL + ${CANTIDAD}`) },
-                        { where: { INV_ID: exist.INV_ID_FK }, transaction: transaction }
-                    );
-
-
-                    if (updatedInventoryRows[0] === 1) {
-                        await transaction.commit();
-                        response(res, 200)
-
-                    } else {
-                        await transaction.rollback();
-
-                    }
+        });
+    
+        await Promise.all(
+            LISTA_PROD.map(async prod => {
+                const Id_Detalle = uniqid();
+    
+                const datosEnv = {
+                    Id_Detalle: Id_Detalle,
+                    Id_Enc_FK: ENC_ID,
+                    Id_Prod_Fk: prod.ID_PROD,
+                    cantidad: prod.CANTIDAD,
+                    Precio_U: prod.PRECIO_U
+                };
+    
+                await detalle.create(datosEnv, { transaction: transaction });
+    
+                let exist = await existencias.findOne({ where: { PRO_ID_FK: prod.ID_PROD, ID_LOTE_FK: LOTE_ID } });
+                let lote = await lotes.findByPk(LOTE_ID);
+                if (!exist || !lote) {
+                    throw new Error("Product is not registered in inventory or lote dont exist");
                 } else {
-
-                    const exist = await existencias.findOne(
-                        { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
-                    );
-
-                    const {CANT_PROD} = exist.dataValues;
-
-                    const cantRestante =  parseInt(CANT_PROD) - CANTIDAD;
+                    exist = exist.dataValues;
+    
+                    if (TIPO_ENCABE == "1") { // Compra: agregamos cantidad del producto a la existencia y al inventario
                     
-                    if(cantRestante >= 0){ //verificamos que exista la cantidad necesaria en el inventario para vender
-
-                        // Actualizar existencias
-                    await existencias.update(
-                        { CANT_PROD: connection.literal(`CANT_PROD - ${CANTIDAD}`) },
-                        { where: { PRO_ID_FK: ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
-                    );
+                          // Actualizar existencias
+                          await existencias.update(
+                            { CANT_PROD: connection.literal(`CANT_PROD + ${prod.CANTIDAD}`) }, // Utilizamos sequelize.literal para realizar una suma
+                            { where: { PRO_ID_FK: prod.ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
+                        );
 
 
-                    // Actualizar inventario
-                    const updatedInventoryRows = await Inventarios.update(
-                        { CANT_TOTAL: connection.literal(`CANT_TOTAL - ${CANTIDAD}`) },
-                        { where: { INV_ID: exist.INV_ID_FK }, transaction: transaction }
-                    );
+                        // Actualizar inventario
+                        const updatedInventoryRows = await Inventarios.update(
+                            { CANT_TOTAL: connection.literal(`CANT_TOTAL + ${prod.CANTIDAD}`) },
+                            { where: { INV_ID: exist.INV_ID_FK }, transaction: transaction }
+                        );
 
-
-                    if (updatedInventoryRows[0] === 1) {
-                        await transaction.commit();
-                        response(res, 200)
                     } else {
-                        await transaction.rollback();
+                        const exist = await existencias.findOne(
+                            { where: { PRO_ID_FK: prod.ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
+                        );
+
+                        const { CANT_PROD } = exist.dataValues;
+
+                        const cantRestante = parseInt(CANT_PROD) - prod.CANTIDAD;
+
+                        if (cantRestante >= 0) { //verificamos que exista la cantidad necesaria en el inventario para vender
+
+                            // Actualizar existencias
+                            await existencias.update(
+                                { CANT_PROD: connection.literal(`CANT_PROD - ${prod.CANTIDAD}`) },
+                                { where: { PRO_ID_FK: prod.ID_PROD, ID_LOTE_FK: LOTE_ID }, transaction: transaction }
+                            );
+
+
+                            // Actualizar inventario
+                            const updatedInventoryRows = await Inventarios.update(
+                                { CANT_TOTAL: connection.literal(`CANT_TOTAL - ${prod.CANTIDAD}`) },
+                                { where: { INV_ID: exist.INV_ID_FK }, transaction: transaction }
+                            );
+
+                        }else{
+                            return response(res, 404, 404, 'Not enough product in inventory')
+                        }
                     }
-
-                    }else{
-                        response(res, 404, 404, 'Not enough product in inventory')
-                    }
-
-                    
-
                 }
-            }
+            })
+        );
 
+        //creamos la factura
 
-
-        } else {
-
-            response(res, 404, 404, "User not found");
+        const dataFact = {
+            FACT_ID: ENC_ID,
+            FACT_FECH: Date.now(),
+            ID_EMPLEADO: datosEmpleado.Id_User,
         }
 
+        const createdFact = await factura.create(dataFact, {transaction:transaction});
+
+    
+        await transaction.commit();
+        response(res, 200);
     } catch (err) {
         response(res, 500, 500, err);
         if (transaction) await transaction.rollback();
         console.error('Error al agregar datos:', err);
     }
+    
 
 }
 

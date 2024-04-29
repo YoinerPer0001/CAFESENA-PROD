@@ -16,32 +16,32 @@ export const validateCreate = [
         .exists().not().isEmpty().withMessage('TIPO_ENCABE is required')
         .isString().withMessage('TIPO_ENCABE must be a string')
         .isLength({ max: 1 }).withMessage('TIPO_ENCABE must be 1 character long'),
-    check('ID_PROD')
-        .exists().not().isEmpty().withMessage('ID_PROD is required')
-        .isString().withMessage('ID_PROD must be a string'),
-    check('CANTIDAD')
-        .exists().not().isEmpty().withMessage('CANTIDAD is required')
-        .isNumeric().withMessage('CANTIDAD must be a number'),
-    check('PRECIO_U')
-        .exists().not().isEmpty().withMessage('PRECIO_U is required')
-        .isDecimal().withMessage('PRECIO_U must be a  decimal number'),
     check('LOTE_ID')
         .exists().not().isEmpty().withMessage('LOTE_ID is required')
         .isString().withMessage('LOTE_ID must be a string'),
-    // check('OBJ_DETALLES')
-    //     .exists().not().isEmpty().withMessage('OBJ_DETALLES is required')
-    //     .isArray().withMessage('OBJ_DETALLES must be an array')
-    //     .custom((value, { req }) => {
-    //         if (value) {
-    //             for (const obj of value) {
-    //                 if (!obj.Id_Prod || !obj.cantidad || !obj.Precio_U) {
-    //                     throw new Error("Object data isn't correct");
-    //                 }
-    //             }
-    //         }
-    //         // Si no se lanzó ninguna excepción, la validación fue exitosa
-    //         return true;
-    //     }),        
+    check('LISTA_PROD')
+        .exists().not().isEmpty().withMessage('LISTA_PROD is required')
+        .isArray().withMessage('LISTA_PROD must be an array')
+        .custom((value, { req }) => {
+            if (value) {
+                for (const obj of value) {
+                    if (!obj.ID_PROD || typeof obj.ID_PROD != 'string') {
+
+                        throw new Error("ID_PROD is required and must be a string");
+
+                    }else if(!obj.CANTIDAD || typeof obj.CANTIDAD != 'number') {
+
+                        throw new Error("CANTIDAD is required and must be a number");
+
+                    }else if(!obj.PRECIO_U || typeof obj.PRECIO_U != 'number') {
+
+                        throw new Error("Precio_U is required and must be a number");
+                    }
+                }
+            }
+            // Si no se lanzó ninguna excepción, la validación fue exitosa
+            return true;
+        }),        
     (req, res, next) => {
         validateResult(req, res, next);
     }

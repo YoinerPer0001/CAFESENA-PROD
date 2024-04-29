@@ -10,38 +10,40 @@ import Producto from "../models/productos.models.js";
 
 let atrExclude = { exclude: ['createdAt', 'updatedAt', 'Pass_User', 'Est_Email_User', 'ESTADO_REGISTRO'] };
 
+const objInclude = [
+    {
+        model:Usuario, as: 'Empleado',
+        attributes:atrExclude
+    },
+    {
+        model: Encabezados,
+        attributes:atrExclude,
+
+        include:[
+            {
+                model:Usuario,
+                attributes:atrExclude
+            },
+            {
+                model:detalle,
+                attributes:atrExclude,
+                include:[
+                    {
+                        model:Producto,
+                        attributes:atrExclude
+                    }
+                ]
+            }
+        ]
+    }
+]
+
 export const getFacturas = async (req, res) => {
     try {
         const fact = await factura.findAll({
             attributes: atrExclude,
-            where: {ESTADO_REGISTRO: 1}
-            // include:[
-            //     {
-            //         model:Usuario, as: 'Empleado',
-            //         attributes:atrExclude
-            //     },
-            //     {
-            //         model: Encabezados,
-            //         attributes:atrExclude,
-
-            //         include:[
-            //             {
-            //                 model:Usuario,
-            //                 attributes:atrExclude
-            //             },
-            //             {
-            //                 model:detalle,
-            //                 attributes:atrExclude,
-            //                 include:[
-            //                     {
-            //                         model:Producto,
-            //                         attributes:atrExclude
-            //                     }
-            //                 ]
-            //             }
-            //         ]
-            //     }
-            // ]
+            where: {ESTADO_REGISTRO: 1},
+            include:objInclude
         });
 
         if (fact) {
@@ -60,7 +62,7 @@ export const getFacturasxId = async (req, res) => {
         const { id } = req.params;
         const fact = await factura.findByPk(id, {
             attributes: atrExclude,
-            //include de ser necesario
+            include:objInclude
         });
 
         if (fact) {
