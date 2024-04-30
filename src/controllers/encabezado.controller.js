@@ -8,13 +8,36 @@ import Producto from "../models/productos.models.js";
 import detalle from '../models/detalles.model.js';
 import factura from "../models/factura.model.js";
 
+let atrExclude = { exclude: ['createdAt', 'updatedAt', 'Pass_User', 'Est_Email_User', 'ESTADO_REGISTRO'] };
+
+const objInclude = [
+
+    {
+        model: Usuario,
+        attributes: atrExclude
+    },
+    {
+        model: detalle,
+        attributes: atrExclude,
+        include: [
+            {
+                model: Producto,
+                attributes: atrExclude
+            }
+        ]
+    }
+
+
+]
+
 //obtiene encabezados 
 export const GetAll = async (req, res) => {
 
     try {
         const encabezados = await Encabezados.findAll({
             attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
-            where: { ESTADO_REGISTRO: 1 }
+            where: { ESTADO_REGISTRO: 1 },
+            include:objInclude
         })
         if (encabezados) {
             response(res, 200, 200, encabezados)
@@ -38,7 +61,8 @@ export const GetxType = async (req, res) => {
 
         const encabezados = await Encabezados.findAll({
             where: { TIPO_ENCABE: type, ESTADO_REGISTRO: 1 },
-            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] }
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ESTADO_REGISTRO'] },
+            include:objInclude
         })
         if (encabezados) {
             response(res, 200, 200, encabezados)
@@ -66,19 +90,19 @@ export const GetxUser = async (req, res) => {
             const encabezados = await Encabezados.findAll({
                 where: { ID_USER_FK: id, TIPO_ENCABE: type, ESTADO_REGISTRO: 1 },
                 attributes: excludeAtr,
-                // include: [
-                //     { 
-                //         model: detalle,
-                //         attributes: excludeAtr,
-                //         include: [
-                //             {
-                //                 model: Producto,
-                //                 attributes: excludeAtr
-                //             }
+                include: [
+                    { 
+                        model: detalle,
+                        attributes: excludeAtr,
+                        include: [
+                            {
+                                model: Producto,
+                                attributes: excludeAtr
+                            }
 
-                //         ]
-                //      }
-                // ]
+                        ]
+                     }
+                ]
             })
             if (encabezados) {
                 response(res, 200, 200, encabezados)
@@ -201,7 +225,7 @@ export const deleteEncabezado = async (req, res) => {
             const encabezadoDetalles = await detalle.findAll({ where: { Id_Enc_FK: id } })
             const Factura = await factura.findByPk(id);
             if (encabezadoDetalles || Factura) {
-               return response(res, 403, 403, 'You cannot delete this encabezado because has details or invoices associated')
+                return response(res, 403, 403, 'You cannot delete this encabezado because has details or invoices associated')
             } else {
                 const deleteEncabezado = await Encabezados.update(
                     { ESTADO_REGISTRO: false },
